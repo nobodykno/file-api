@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const config = require ('../config/database')
 const login = (req, res) => {
 
-    console.log(req)
+
     const { email, password } = req.body
   
     // Step 1 — Get all users directly
