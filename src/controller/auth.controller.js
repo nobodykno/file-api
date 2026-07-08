@@ -7,7 +7,7 @@ const login = (req, res) => {
     const { email, password } = req.body
   
     // Step 1 — Get all users directly
-    const users = require('../data/users.json')
+    const users = require('../data/project.json')
   
     // Step 2 — Find user by email
     const user = users.find((u) => u.email === email)
