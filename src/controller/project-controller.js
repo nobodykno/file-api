@@ -1,4 +1,4 @@
-const projects = require("../data/projects.json");
+const projects = require('../data/projects.json');
 
 
 const getProjects = () => {
@@ -14,18 +14,17 @@ const saveProjects = (updatedProjects) => {
 
 
 
+
 const createProject = (req, res) => {
 
-  const { name, description } = req.body
+  const { name, description } = req.body;
 
-  // Step 1 — Validate fields
+
   if (!name || !description) {
-    return res.status(400).json({ message: 'Name and description are required!' })
+    return res.status(400).json({ message: 'Name and description are required!' });
   }
 
-
-  const projects = getProjects()
-
+  const projects = getProjects();
 
   const newProject = {
     id: projects.length + 1,
@@ -34,74 +33,73 @@ const createProject = (req, res) => {
     filesCount: 0,
     jobsCount: 0,
     createdAt: new Date().toLocaleString()
-  }
+  };
 
-  projects.push(newProject)
-  saveProjects(projects)
-
+  projects.push(newProject);
+  saveProjects(projects);
 
   res.status(201).json({
     message: 'Project created successfully!',
     project: newProject
-  })
-}
+  });
+};
 
 
 const getAllProjects = (req, res) => {
 
-  const projects = getProjects()
+  const projects = getProjects();
 
  
   res.status(200).json({
     message: 'Projects fetched successfully!',
     projects
-  })
-}
+  });
+};
 
 
 const getProjectById = (req, res) => {
 
 
-  const id = parseInt(req.params.id)
+  const id = parseInt(req.params.id);
 
 
-  const projects = getProjects()
+  const projects = getProjects();
 
 
-  const project = projects.find((p) => p.id === id)
+  const project = projects.find((p) => p.id === id);
 
   if (!project) {
-    return res.status(404).json({ message: 'Project not found!' })
+    return res.status(404).json({ message: 'Project not found!' });
   }
 
   res.status(200).json({
     message: 'Project fetched successfully!',
     project
-  })
-}
+  });
+};
 
 
 const updateProject = (req, res) => {
 
 
-  const id = parseInt(req.params.id)
+  const id = parseInt(req.params.id);
 
 
-  const { name, description } = req.body
+  const { name, description } = req.body;
 
 
   if (!name || !description) {
-    return res.status(400).json({ message: 'Name and description are required!' })
+    return res.status(400).json({ message: 'Name and description are required!' });
   }
 
-  const projects = getProjects()
+  const projects = getProjects();
 
 
-  const index = projects.findIndex((p) => p.id === id)
+  const index = projects.findIndex((p) => p.id === id);
 
 
   if (index === -1) {
-    return res.status(404).json({ message: 'Project not found!' })
+    return res.status(404).json({ message: 'Project not found!' });
   }
 
   projects[index] = {
@@ -109,44 +107,44 @@ const updateProject = (req, res) => {
     name,
     description,
     updatedAt: new Date().toLocaleString()
-  }
+  };
 
 
-  saveProjects(projects)
+  saveProjects(projects);
 
   
   res.status(200).json({
     message: 'Project updated successfully!',
     project: projects[index]
-  })
-}
+  });
+};
 
 
 const deleteProject = (req, res) => {
 
 
-  const id = parseInt(req.params.id)
+  const id = parseInt(req.params.id);
 
 
-  const projects = getProjects()
+  const projects = getProjects();
 
 
-  const project = projects.find((p) => p.id === id)
+  const project = projects.find((p) => p.id === id);
 
   if (!project) {
-    return res.status(404).json({ message: 'Project not found!' })
+    return res.status(404).json({ message: 'Project not found!' });
   }
 
 
-  const updatedProjects = projects.filter((p) => p.id !== id)
-  saveProjects(updatedProjects)
+  const updatedProjects = projects.filter((p) => p.id !== id);
+  saveProjects(updatedProjects);
 
 
 
   res.status(200).json({
     message: 'Project deleted successfully!'
-  })
-}
+  });
+};
 
 module.exports = {
   createProject,
@@ -154,4 +152,4 @@ module.exports = {
   getProjectById,
   updateProject,
   deleteProject
-}
+};
