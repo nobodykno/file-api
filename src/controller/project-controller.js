@@ -1,6 +1,5 @@
 const projects = require('../data/projects.json');
 
-
 const getProjects = () => {
   return projects;
 };
@@ -10,140 +9,129 @@ const saveProjects = (updatedProjects) => {
   projects.push(...updatedProjects);
 };
 
-
-
-
-
-
 const createProject = (req, res) => {
+  try {
+    const { name, description } = req.body;
 
-  const { name, description } = req.body;
+    if (!name || !description) {
+      return res
+        .status(400)
+        .json({ message: 'Name and description are required!' });
+    }
 
+    const projects = getProjects();
 
-  if (!name || !description) {
-    return res.status(400).json({ message: 'Name and description are required!' });
+    const newProject = {
+      id: projects.length + 1,
+      name,
+      description,
+      filesCount: 0,
+      jobsCount: 0,
+      createdAt: new Date().toLocaleString(),
+    };
+
+    projects.push(newProject);
+    saveProjects(projects);
+
+    res.status(201).json({
+      message: 'Project created successfully!',
+      project: newProject,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Project Cannot be created' });
   }
-
-  const projects = getProjects();
-
-  const newProject = {
-    id: projects.length + 1,
-    name,
-    description,
-    filesCount: 0,
-    jobsCount: 0,
-    createdAt: new Date().toLocaleString()
-  };
-
-  projects.push(newProject);
-  saveProjects(projects);
-
-  res.status(201).json({
-    message: 'Project created successfully!',
-    project: newProject
-  });
 };
-
 
 const getAllProjects = (req, res) => {
-
   const projects = getProjects();
 
- 
   res.status(200).json({
     message: 'Projects fetched successfully!',
-    projects
+    projects,
   });
 };
-
 
 const getProjectById = (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
 
+    const projects = getProjects();
 
-  const id = parseInt(req.params.id);
+    const project = projects.find((p) => p.id === id);
 
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found!' });
+    }
 
-  const projects = getProjects();
-
-
-  const project = projects.find((p) => p.id === id);
-
-  if (!project) {
-    return res.status(404).json({ message: 'Project not found!' });
+    res.status(200).json({
+      message: 'Project fetched successfully!',
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Project cannot be fetched!' });
   }
-
-  res.status(200).json({
-    message: 'Project fetched successfully!',
-    project
-  });
 };
-
 
 const updateProject = (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+
+    const { name, description } = req.body;
+
+    if (!name || !description) {
+      return res
+        .status(400)
+        .json({ message: 'Name and description are required!' });
+    }
+
+    const projects = getProjects();
+
+    const index = projects.findIndex((p) => p.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ message: 'Project not found!' });
+    }
+
+    projects[index] = {
+      ...projects[index],
+      name,
+      description,
+      updatedAt: new Date().toLocaleString(),
+    };
+
+    saveProjects(projects);
+
+    res.status(200).json({
+      message: 'Project updated successfully!',
+      project: projects[index],
+    });
 
 
-  const id = parseInt(req.params.id);
-
-
-  const { name, description } = req.body;
-
-
-  if (!name || !description) {
-    return res.status(400).json({ message: 'Name and description are required!' });
+  } catch (error) {
+    res.status(500).json({ message: 'Project cannot be updated !' });
   }
-
-  const projects = getProjects();
-
-
-  const index = projects.findIndex((p) => p.id === id);
-
-
-  if (index === -1) {
-    return res.status(404).json({ message: 'Project not found!' });
-  }
-
-  projects[index] = {
-    ...projects[index],   
-    name,
-    description,
-    updatedAt: new Date().toLocaleString()
-  };
-
-
-  saveProjects(projects);
-
-  
-  res.status(200).json({
-    message: 'Project updated successfully!',
-    project: projects[index]
-  });
 };
 
-
 const deleteProject = (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
 
+    const projects = getProjects();
 
-  const id = parseInt(req.params.id);
+    const project = projects.find((p) => p.id === id);
 
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found!' });
+    }
 
-  const projects = getProjects();
+    const updatedProjects = projects.filter((p) => p.id !== id);
+    saveProjects(updatedProjects);
 
-
-  const project = projects.find((p) => p.id === id);
-
-  if (!project) {
-    return res.status(404).json({ message: 'Project not found!' });
+    res.status(200).json({
+      message: 'Project deleted successfully!',
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Project cannot be deleted!' });
   }
-
-
-  const updatedProjects = projects.filter((p) => p.id !== id);
-  saveProjects(updatedProjects);
-
-
-
-  res.status(200).json({
-    message: 'Project deleted successfully!'
-  });
 };
 
 module.exports = {
@@ -151,5 +139,5 @@ module.exports = {
   getAllProjects,
   getProjectById,
   updateProject,
-  deleteProject
+  deleteProject,
 };
