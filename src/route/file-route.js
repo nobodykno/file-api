@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const fileController = require('../controller/file-controller');
 const verifyToken = require('../middleware/auth');
-const upload = require('../middleware/upload');
+const upload = require('../middleware/uploader');
 
 // Routes
 router.post(
   '/',
-  verifyToken, 
+  verifyToken,
   upload.array('files', 10), fileController.uploadFiles);
 
 router.get(

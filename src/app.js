@@ -10,8 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 
-app.use('/v1', require('./route/main-route'));   // 👈 all auth routes
-
+app.use('/v1', require('./route/main-route'));   
 
 app.get('/', (req, res) => {
   res.json({ message: 'File API' });

@@ -1,20 +1,27 @@
 const jwt = require('jsonwebtoken');
 
 const config = require('../config/database');
-const login = (req, res) => {
+
+const User = require('../models/user-model');
+require('dotenv').config();
+
+
+const login = async (req, res) => {
 
   try {
     const { email, password } = req.body;
 
-    const users = require('../data/project.json');
 
-
-    const user = users.find((u) => u.email === email);
+    //Database query to find the particular user with Id
+    const user = await User.findOne({
+      where: { email: email }
+    });
 
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password!' });
     }
+
 
 
     if (user.password !== password) {
@@ -23,7 +30,7 @@ const login = (req, res) => {
 
     const token = jwt.sign(
       { id: user.id, email: user.email },
-      config.secret,
+      process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
 
@@ -41,6 +48,7 @@ const login = (req, res) => {
   catch (error) {
     res.status(201).json({
       message: 'Failed to login',
+      error: error
     });
   }
 
