@@ -1,15 +1,16 @@
-const projects = require('../data/projects.json');
 
-const getProjects = () => {
-  return projects;
-};
+const Project = require('../models/project-model');
 
-const saveProjects = (updatedProjects) => {
-  projects.length = 0;
-  projects.push(...updatedProjects);
-};
 
-const createProject = (req, res) => {
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * 
+ */
+
+const createProject = async (req, res) => {
   try {
     const { name, description } = req.body;
 
@@ -19,59 +20,90 @@ const createProject = (req, res) => {
         .json({ message: 'Name and description are required!' });
     }
 
-    const projects = getProjects();
 
     const newProject = {
-      id: projects.length + 1,
-      name,
-      description,
-      filesCount: 0,
-      jobsCount: 0,
-      createdAt: new Date().toLocaleString(),
+      name: name,
+      description: description,
+      files_count: 0,
+      jobs_count: 0,
+      created_at: new Date().toLocaleString(),
+      updated_at: new Date().toLocaleString()
+
     };
 
-    projects.push(newProject);
-    saveProjects(projects);
+    //Query to insert project details into the table
+    await Project.create(newProject);
 
     res.status(201).json({
       message: 'Project created successfully!',
-      project: newProject,
+      result: newProject,
     });
+
   } catch (error) {
-    res.status(500).json({ message: 'Project Cannot be created' });
+    res.status(500).json({ message: 'Project Cannot be created', error: error });
   }
 };
 
-const getAllProjects = (req, res) => {
-  const projects = getProjects();
+/**
+ * 
+ * @returns all  project
+ */
+
+const getAllProjects = async (req, res) => {
+
+  // Query to get all projects
+  const projects = await Project.findAll();
 
   res.status(200).json({
     message: 'Projects fetched successfully!',
-    projects,
+    result: projects,
   });
 };
 
-const getProjectById = (req, res) => {
+
+/**
+ * 
+ * @param projectId
+ * @returns single project details
+ * 
+ */
+
+const getProjectById = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
-    const projects = getProjects();
+    // Query to get single project details
+    const projectDetails = await Project.findOne({
+      where: {
+        id: id
+      }
+    });
 
-    const project = projects.find((p) => p.id === id);
-
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found!' });
+    if (!projectDetails) {
+      res.status(400).json({
+        message: 'Project not found!',
+        result: projectDetails
+      });
     }
 
     res.status(200).json({
       message: 'Project fetched successfully!',
+      result: projectDetails
     });
   } catch (error) {
     res.status(500).json({ message: 'Project cannot be fetched!' });
   }
 };
 
-const updateProject = (req, res) => {
+/**
+ * 
+ * @param  projectId
+ * @param  name
+ * @param description
+ * 
+ */
+
+const updateProject = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
@@ -83,26 +115,26 @@ const updateProject = (req, res) => {
         .json({ message: 'Name and description are required!' });
     }
 
-    const projects = getProjects();
+    //Query to update the project
 
-    const index = projects.findIndex((p) => p.id === id);
+    await Project.update(
+      {
+        name: name,
+        description: description,
+        files_count: 0,
+        jobs_count: 0,
+        updated_at: new Date().toLocaleString()
+      },
+      {
+        where: {
 
-    if (index === -1) {
-      return res.status(404).json({ message: 'Project not found!' });
-    }
-
-    projects[index] = {
-      ...projects[index],
-      name,
-      description,
-      updatedAt: new Date().toLocaleString(),
-    };
-
-    saveProjects(projects);
+          id: id
+        }
+      }
+    );
 
     res.status(200).json({
       message: 'Project updated successfully!',
-      project: projects[index],
     });
 
 
@@ -111,20 +143,22 @@ const updateProject = (req, res) => {
   }
 };
 
-const deleteProject = (req, res) => {
+/**
+ * 
+ * @param projectId 
+ *
+ * 
+ */
+const deleteProject = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
-    const projects = getProjects();
-
-    const project = projects.find((p) => p.id === id);
-
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found!' });
-    }
-
-    const updatedProjects = projects.filter((p) => p.id !== id);
-    saveProjects(updatedProjects);
+    //Query to delete project
+    await Project.destroy({
+      where: {
+        id: id
+      }
+    });
 
     res.status(200).json({
       message: 'Project deleted successfully!',

@@ -3,7 +3,7 @@ const router = express.Router();
 
 router.use('/api', require('./auth-route'));
 
-router.use('/api/project', require('./auth-route'));
+router.use('/api/project', require('./project-route'));
 
 router.use('/api/projects/:projectId/files', require('./file-route'));
 
