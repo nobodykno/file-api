@@ -1,86 +1,23 @@
+
+
+const File = require('../models/file-model');
 const fs = require('fs');
-const path = require('path');
+const Project = require('../models/project-model');
 
-
-/** 
+/**
+ * 
+ * @param multiplefiles 
+ * 
  *  
- * @param void
- * 
- * Return all files
- * 
  */
-
-const getAllFiles = () => {
-
-  const filePath = path.join(__dirname, '../data/files.json');
-  const files = fs.readFileSync(filePath, 'utf-8');
-  return JSON.parse(files);
-
-};
-
-/** 
- *  
- * @param files
- * 
- * save all files
- * 
- */
-
-const saveFiles = (files) => {
-
-  const filePath = path.join(__dirname, '../data/files.json');
-  fs.writeFileSync(filePath, JSON.stringify(files));
-
-};
-/** 
- *  
- * @param void
- * 
- * return list of projects
- * 
- */
-
-const getProjects = () => {
-
-  const projectsPath = path.join(__dirname, '../data/project.json');
-  const projects = fs.readFileSync(projectsPath, 'utf-8');
-  return projects;
-
-};
-
-/** 
- *  
- * @param files
- * 
- * save to list of project
- * 
- */
-
-const saveProjects = (files) => {
-
-  const projectsPath = path.join(__dirname, '../data/project.json');
-  fs.writeFileSync(projectsPath, JSON.stringify(files));
-
-};
-
-/** 
- *  
- * @param projectId
- * 
- * Upload files to the project
- * 
- */
-
-
-const uploadFiles = (req, res) => {
+const uploadFiles = async (req, res) => {
 
   try {
     const projectId = +req.params.projectId;
-    const projects = getProjects();
-    const project = projects.find((p) => p.id === projectId);
 
 
-    if (!project) {
+
+    if (!projectId) {
       return res.status(404).json({ message: 'Project not found!' });
     }
 
@@ -88,33 +25,43 @@ const uploadFiles = (req, res) => {
       return res.status(400).json({ message: 'No files uploaded!' });
     }
 
-    const files = getAllFiles();
 
     const newFiles = req.files.map((file) => ({
-      id: Date.now() + Math.floor(Math.random() * 1000),
-      projectId: projectId,
+      project_id: projectId,
       name: file.originalname,
-      fileName: file.filename,
+      file_name: file.filename,
       size: file.size,
-      mimeType: file.mimetype,
+      mime_type: file.mimetype,
       path: file.path,
       uploadedAt: new Date().toLocaleString()
     }));
 
+    // Query to create bulk files
+    await File.bulkCreate(newFiles);
 
-    const updatedFiles = [...files, ...newFiles];
-    saveFiles(updatedFiles);
-
-
-    const projectIndex = projects.findIndex((p) => p.id === projectId);
-    projects[projectIndex].filesCount = updatedFiles.filter(
-      (f) => f.projectId === projectId
-    ).length;
-    saveProjects(projects);
+    const fileCount = await File.count({
+      where: {
+        project_id: projectId
+      }
+    });
 
 
-    res.status(201).json({
-      message: `${newFiles.length} file(s) uploaded successfully!`,
+    // Query to update project details
+    await Project.update(
+      {
+        files_count: fileCount
+      },
+      {
+        where: {
+          id: projectId
+        }
+      }
+    );
+
+
+
+    return res.status(201).json({
+      message: 'Files uploaded successfully!'
     });
 
 
@@ -124,7 +71,7 @@ const uploadFiles = (req, res) => {
       return res.status(400).json({ message: 'File size too large! Max 10MB allowed.' });
     }
 
-    res.status(500).json({ message: 'Upload failed!', error: err.message });
+    return res.status(500).json({ message: 'Upload failed!', error: err });
   }
 
 };
@@ -136,32 +83,32 @@ const uploadFiles = (req, res) => {
  * Get all project files
  * 
  */
-const getProjectFiles = (req, res) => {
+const getProjectFiles = async (req, res) => {
 
   try {
 
     const projectId = parseInt(req.params.projectId);
 
-    const projects = getProjects();
-    const project = projects.find((p) => p.id === projectId);
 
-    if (!project) {
+    if (!projectId) {
       return res.status(404).json({ message: 'Project not found!' });
     }
 
+    // Query to find all files belongs to the project
+    const projectFiles = await File.findAll({
+      where: {
+        project_id: projectId
+      }
+    });
 
-    const files = getAllFiles();
-
-    const projectFiles = files.filter((f) => f.projectId === projectId);
-
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Files fetched successfully!',
       count: projectFiles.length,
-      files: projectFiles
+      result: projectFiles
     });
 
   } catch (err) {
-    res.status(500).json({ message: 'Server error!' });
+    return res.status(500).json({ message: 'Server error!' });
   }
 };
 
@@ -173,55 +120,66 @@ const getProjectFiles = (req, res) => {
  * delete a file
  * 
  */
-const deleteFile = (req, res) => {
-
+const deleteFile = async (req, res) => {
   try {
-
-    const projectId = parseInt(req.params.projectId);
-    const fileId = parseInt(req.params.fileId);
-
-
-    const projects = getProjects();
-    const project = projects.find((p) => p.id === projectId);
-
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found!' });
-    }
+    const projectId = Number(req.params.projectId);
+    const fileId = Number(req.params.fileId);
 
 
-    const files = getAllFiles();
-    const file = files.find(
-      (f) => f.id === fileId && f.projectId === projectId
-    );
 
+    //Query to check file exist or not
+
+    const file = await File.findOne({
+      where: {
+        id: fileId,
+      }
+    });
 
     if (!file) {
-      return res.status(404).json({ message: 'File not found!' });
+      return res.status(404).json({
+        message: 'File not found!'
+      });
     }
+    // Query to delete a file
+    await File.destroy({
+      where: {
+        id: fileId,
+        project_id: projectId
+      }
+    });
 
+    // Query to count number of files
+    const fileCount = await File.count({
+      where: {
+        project_id: projectId
+      }
+    });
 
-    const updatedFiles = files.filter((f) => f.id !== fileId);
-    saveFiles(updatedFiles);
+    // Query to update file count in project
+    await Project.update(
+      {
+        files_count: fileCount
+      },
+      {
+        where: {
+          id: projectId
+        }
+      }
+    );
 
-
-    const projectIndex = projects.findIndex((p) => p.id === projectId);
-    projects[projectIndex].filesCount = updatedFiles.filter(
-      (f) => f.projectId === projectId
-    ).length;
-    saveProjects(projects);
-
-
+    // Delete physical file
     if (fs.existsSync(file.path)) {
       fs.unlinkSync(file.path);
     }
 
-
-    res.status(200).json({
+    return res.status(200).json({
       message: 'File deleted successfully!'
     });
-
   } catch (err) {
-    res.status(500).json({ message: 'Server error!', error: err.message });
+    return res.status(500).json({
+      message: 'Server error!',
+      error: err.message
+    });
   }
 };
 

@@ -15,17 +15,17 @@ router.get(
   projectController.getAllProjects);
 
 router.get(
-  '/:id/', 
+  '/:projectId', 
   verifyToken, 
   projectController.getProjectById);
 
 router.patch(
-  '/:id/', 
+  '/:projectId', 
   verifyToken, 
   projectController.updateProject);
 
 router.delete(
-  '/:id/', 
+  '/:projectId', 
   verifyToken, 
   projectController.deleteProject);
 

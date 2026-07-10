@@ -34,13 +34,13 @@ const createProject = async (req, res) => {
     //Query to insert project details into the table
     await Project.create(newProject);
 
-    res.status(201).json({
+    return res.status(201).json({
       message: 'Project created successfully!',
       result: newProject,
     });
 
   } catch (error) {
-    res.status(500).json({ message: 'Project Cannot be created', error: error });
+    return res.status(500).json({ message: 'Project Cannot be created', error: error });
   }
 };
 
@@ -52,12 +52,20 @@ const createProject = async (req, res) => {
 const getAllProjects = async (req, res) => {
 
   // Query to get all projects
-  const projects = await Project.findAll();
+  try {
+    const projects = await Project.findAll();
 
-  res.status(200).json({
-    message: 'Projects fetched successfully!',
-    result: projects,
-  });
+    return res.status(200).json({
+      message: 'Projects fetched successfully!',
+      result: projects,
+    });
+  }
+  catch (error) {
+    return res.status(500).json({
+      message: 'Projects not fetched successfully!'
+    });
+  }
+
 };
 
 
@@ -70,7 +78,7 @@ const getAllProjects = async (req, res) => {
 
 const getProjectById = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.projectId);
 
     // Query to get single project details
     const projectDetails = await Project.findOne({
@@ -80,18 +88,18 @@ const getProjectById = async (req, res) => {
     });
 
     if (!projectDetails) {
-      res.status(400).json({
+      return res.status(400).json({
         message: 'Project not found!',
         result: projectDetails
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Project fetched successfully!',
       result: projectDetails
     });
   } catch (error) {
-    res.status(500).json({ message: 'Project cannot be fetched!' });
+    return res.status(500).json({ message: 'Project cannot be fetched!' });
   }
 };
 
@@ -105,7 +113,7 @@ const getProjectById = async (req, res) => {
 
 const updateProject = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.projectId);
 
     const { name, description } = req.body;
 
@@ -133,13 +141,13 @@ const updateProject = async (req, res) => {
       }
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Project updated successfully!',
     });
 
 
   } catch (error) {
-    res.status(500).json({ message: 'Project cannot be updated !' });
+    return res.status(500).json({ message: 'Project cannot be updated !' });
   }
 };
 
@@ -151,7 +159,7 @@ const updateProject = async (req, res) => {
  */
 const deleteProject = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.projectId);
 
     //Query to delete project
     await Project.destroy({
@@ -160,7 +168,7 @@ const deleteProject = async (req, res) => {
       }
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Project deleted successfully!',
     });
   } catch (error) {
