@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const fileController = require('../controller/file-controller');
+const controller = require('../controller/index');
 const verifyToken = require('../middleware/auth');
 const upload = require('../middleware/uploader');
 
@@ -8,18 +8,18 @@ const upload = require('../middleware/uploader');
 router.post(
   '/',
   verifyToken,
-  upload.array('files', 10), fileController.uploadFiles);
+  upload.array('files', 10), controller.FileController.uploadFiles);
 
 router.get(
   '/',
   verifyToken,
-  fileController.getProjectFiles
+  controller.FileController.getProjectFiles
 );
 
 router.delete(
   '/:fileId',
   verifyToken,
-  fileController.deleteFile
+  controller.FileController.deleteFile
 );
 
 module.exports = router;

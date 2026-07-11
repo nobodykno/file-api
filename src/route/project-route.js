@@ -1,32 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const projectController = require('../controller/project-controller');
+const controller = require('../controller/index');
 const verifyToken = require('../middleware/auth');
 
 // All / routes are protected
 router.post(
   '/', 
   verifyToken, 
-  projectController.createProject);
+  controller.ProjectController.createProject);
 
 router.get(
   '/',
   verifyToken, 
-  projectController.getAllProjects);
+  controller.ProjectController.getAllProjects);
 
 router.get(
   '/:projectId', 
   verifyToken, 
-  projectController.getProjectById);
+  controller.ProjectController.getProjectById);
 
 router.patch(
   '/:projectId', 
   verifyToken, 
-  projectController.updateProject);
+  controller.ProjectController.updateProject);
 
 router.delete(
   '/:projectId', 
   verifyToken, 
-  projectController.deleteProject);
+  controller.ProjectController.deleteProject);
 
 module.exports = router;
