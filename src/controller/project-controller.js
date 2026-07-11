@@ -1,5 +1,5 @@
 
-const Project = require('../models/project-model');
+const model = require('../models/index');
 
 
 
@@ -32,7 +32,7 @@ const createProject = async (req, res) => {
     };
 
     //Query to insert project details into the table
-    await Project.create(newProject);
+    await model.Project.create(newProject);
 
     return res.status(201).json({
       message: 'Project created successfully!',
@@ -53,7 +53,7 @@ const getAllProjects = async (req, res) => {
 
   // Query to get all projects
   try {
-    const projects = await Project.findAll();
+    const projects = await model.Project.findAll();
 
     return res.status(200).json({
       message: 'Projects fetched successfully!',
@@ -81,7 +81,7 @@ const getProjectById = async (req, res) => {
     const id = parseInt(req.params.projectId);
 
     // Query to get single project details
-    const projectDetails = await Project.findOne({
+    const projectDetails = await model.Project.findOne({
       where: {
         id: id
       }
@@ -125,7 +125,7 @@ const updateProject = async (req, res) => {
 
     //Query to update the project
 
-    await Project.update(
+    await model.Project.update(
       {
         name: name,
         description: description,
@@ -162,7 +162,7 @@ const deleteProject = async (req, res) => {
     const id = parseInt(req.params.projectId);
 
     //Query to delete project
-    await Project.destroy({
+    await model.Project.destroy({
       where: {
         id: id
       }

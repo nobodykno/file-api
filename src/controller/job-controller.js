@@ -1,5 +1,5 @@
-const Job = require('../models/job-model');
-const File = require('../models/file-model');
+
+const model = require('../models/index');
 const path = require('path');
 const fs = require('fs');
 const archiver = require('archiver');
@@ -25,7 +25,7 @@ const createJob = async (req, res) => {
     }
 
 
-    const files = await File.findAll({
+    const files = await model.File.findAll({
       where: {
         id: fileIds,
         project_id: projectId
@@ -40,7 +40,7 @@ const createJob = async (req, res) => {
     }
 
 
-    const job = await Job.create({
+    const job = await model.Job.create({
       project_id: projectId,
       status: 'PENDING',
       progress: 0,
@@ -76,7 +76,7 @@ const processZipJob = async (jobId, files) => {
   try {
 
     //Query to update job status
-    await Job.update(
+    await model.Job.update(
       { status: 'RUNNING', progress: 10 },
       { where: { id: jobId } }
     );
@@ -97,7 +97,7 @@ const processZipJob = async (jobId, files) => {
     await createZipFile(zipFilePath, files, jobId, totalSize);
 
     //Query to update job status
-    await Job.update(
+    await model.Job.update(
       {
         status: 'COMPLETED',
         progress: 100,
@@ -110,7 +110,7 @@ const processZipJob = async (jobId, files) => {
 
   } catch (err) {
     //Query to update job status
-    await Job.update(
+    await model.Job.update(
       { status: 'FAILED', progress: 0 },
       { where: { id: jobId } }
     );
@@ -148,14 +148,14 @@ const createZipFile = (zipFilePath, files, jobId, totalSize) => {
 
       if (percent > 99) { percent = 99; }
 
-      await Job.update(
+      await model.Job.update(
         { progress: percent },
         { where: { id: jobId } }
       );
     });
 
     output.on('close', async () => {
-      await Job.update(
+      await model.Job.update(
         { progress: 90 },
         { where: { id: jobId } }
       );
@@ -190,7 +190,7 @@ const getAllJobs = async (req, res) => {
     const projectId = parseInt(req.params.projectId);
 
     //Query to fimnd all jobs belongs to project
-    const jobs = await Job.findAll({
+    const jobs = await model.Job.findAll({
       where: { project_id: projectId },
       order: [['createdAt', 'DESC']]
     });
@@ -222,7 +222,7 @@ const getJobStatus = async (req, res) => {
 
     //Query to fimnd all jobs status
 
-    const job = await Job.findOne({
+    const job = await model.Job.findOne({
       where: { id: jobId, project_id: projectId }
     });
 
@@ -257,7 +257,7 @@ const downloadOutput = async (req, res) => {
     const projectId = parseInt(req.params.projectId);
 
     // Query to find job 
-    const job = await Job.findOne({
+    const job = await model.Job.findOne({
       where: { id: jobId, project_id: projectId }
     });
 

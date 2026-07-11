@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/user-model');
+const model = require('../models/index');
 
 require('dotenv').config();
 
@@ -12,7 +12,7 @@ const login = async (req, res) => {
 
 
     //Database query to find the particular user with Id
-    const user = await User.findOne({
+    const user = await model.User.findOne({
       where: { email: email }
     });
 

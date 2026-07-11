@@ -1,8 +1,7 @@
 
 
-const File = require('../models/file-model');
+const model = require('../models/index');
 const fs = require('fs');
-const Project = require('../models/project-model');
 
 /**
  * 
@@ -37,9 +36,9 @@ const uploadFiles = async (req, res) => {
     }));
 
     // Query to create bulk files
-    await File.bulkCreate(newFiles);
+    await model.File.bulkCreate(newFiles);
 
-    const fileCount = await File.count({
+    const fileCount = await model.File.count({
       where: {
         project_id: projectId
       }
@@ -47,7 +46,7 @@ const uploadFiles = async (req, res) => {
 
 
     // Query to update project details
-    await Project.update(
+    await model.Project.update(
       {
         files_count: fileCount
       },
@@ -95,7 +94,7 @@ const getProjectFiles = async (req, res) => {
     }
 
     // Query to find all files belongs to the project
-    const projectFiles = await File.findAll({
+    const projectFiles = await model.File.findAll({
       where: {
         project_id: projectId
       }
@@ -129,7 +128,7 @@ const deleteFile = async (req, res) => {
 
     //Query to check file exist or not
 
-    const file = await File.findOne({
+    const file = await model.File.findOne({
       where: {
         id: fileId,
       }
@@ -141,7 +140,7 @@ const deleteFile = async (req, res) => {
       });
     }
     // Query to delete a file
-    await File.destroy({
+    await model.File.destroy({
       where: {
         id: fileId,
         project_id: projectId
@@ -149,14 +148,14 @@ const deleteFile = async (req, res) => {
     });
 
     // Query to count number of files
-    const fileCount = await File.count({
+    const fileCount = await model.File.count({
       where: {
         project_id: projectId
       }
     });
 
     // Query to update file count in project
-    await Project.update(
+    await model.Project.update(
       {
         files_count: fileCount
       },
