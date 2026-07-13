@@ -123,14 +123,22 @@ const updateProject = async (req, res) => {
         .json({ message: 'Name and description are required!' });
     }
 
+    const projectDetails = await model.Project.findOne(
+      {
+        where: {
+          id: id
+        }
+      }
+    );
+
     //Query to update the project
 
-    await model.Project.update(
+    const project = await model.Project.update(
       {
         name: name,
         description: description,
-        files_count: 0,
-        jobs_count: 0,
+        files_count: projectDetails.files_count,
+        jobs_count: projectDetails.jobs_count,
         updated_at: new Date().toLocaleString()
       },
       {
@@ -143,6 +151,13 @@ const updateProject = async (req, res) => {
 
     return res.status(200).json({
       message: 'Project updated successfully!',
+      result: {
+        name: name,
+        description: description,
+        files_count: projectDetails.files_count,
+        jobs_count: projectDetails.jobs_count,
+        created_at: projectDetails.created_at
+      },
     });
 
 
