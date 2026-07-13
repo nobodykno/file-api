@@ -177,6 +177,18 @@ const deleteProject = async (req, res) => {
     const id = parseInt(req.params.projectId);
 
     //Query to delete project
+    await model.Job.destroy({
+      where: {
+        project_id: id
+      }
+    });
+    
+    await model.File.destroy({
+      where: {
+        project_id: id
+      }
+    });
+    
     await model.Project.destroy({
       where: {
         id: id
@@ -187,7 +199,7 @@ const deleteProject = async (req, res) => {
       message: 'Project deleted successfully!',
     });
   } catch (error) {
-    return res.status(500).json({ message: 'Project cannot be deleted!' });
+    return res.status(500).json({ message: 'Project cannot be deleted!'});
   }
 };
 
