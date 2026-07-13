@@ -51,7 +51,7 @@ const createJob = async (req, res) => {
 
     res.status(201).json({
       message: 'Job created successfully!',
-      job
+      result: job
     });
 
 
@@ -232,7 +232,7 @@ const getJobStatus = async (req, res) => {
 
     return res.status(200).json({
       message: 'Job fetched successfully!',
-      job
+      result:job
     });
 
   } catch (err) {
