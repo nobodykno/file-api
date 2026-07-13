@@ -10,7 +10,6 @@ const fs = require('fs');
  *  
  */
 const uploadFiles = async (req, res) => {
-
   try {
     const projectId = +req.params.projectId;
 
@@ -36,7 +35,8 @@ const uploadFiles = async (req, res) => {
     }));
 
     // Query to create bulk files
-    await model.File.bulkCreate(newFiles);
+    const filedata = await model.File.bulkCreate(newFiles);
+
 
     const fileCount = await model.File.count({
       where: {
@@ -60,7 +60,8 @@ const uploadFiles = async (req, res) => {
 
 
     return res.status(201).json({
-      message: 'Files uploaded successfully!'
+      message: 'Files uploaded successfully!',
+      result: filedata
     });
 
 
