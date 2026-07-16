@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+# Environment variables₹
+.env
+
+# Logs
+*.log
+
+# Mac files
+.DS_Store
+
+# Lint rules
+.eslintrc.json
+eslint.config.js
+
+# VS CODE FILE
+.vscode
+
+# zipfiles
+
+zipfiles
+
+# uploads
+
+uploads
