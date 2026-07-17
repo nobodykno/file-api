@@ -1,13 +1,14 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database.js";
-import { IProjectAttributes } from "../types/project-type.js";
+import { IProjectAttributes, IProjectCreationAttributes } from "../types/project-type.js";
 
 
 
-class Project extends Model<IProjectAttributes> implements IProjectAttributes {
+
+class Project extends Model<IProjectAttributes, IProjectCreationAttributes> implements IProjectAttributes {
   declare id: number;
   declare name: string;
-  declare description: string | null;
+  declare description: string;
   declare files_count: number;
   declare jobs_count: number;
   declare createdAt: Date;
@@ -29,7 +30,7 @@ Project.init(
 
     description: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
 
     files_count: {

@@ -1,205 +1,148 @@
-
-import model from "../models/index.js";
-import { Request, Response, NextFunction } from 'express';
-
-
-/**
- * 
- * @param {*} req 
- * @param {*} res 
- * 
- */
-
-export const createProject = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { name, description } = req.body;
-
-    if (!name || !description) {
-      return res
-        .status(400)
-        .json({ message: 'Name and description are required!' });
-    }
-
-
-    const newProject = {
-      name: name,
-      description: description,
-      files_count: 0,
-      jobs_count: 0,
-      created_at: new Date().toLocaleString(),
-      updated_at: new Date().toLocaleString()
-
-    };
-
-    //Query to insert project details into the table
-    await model.Project.create(newProject);
-
-    return res.status(201).json({
-      message: 'Project created successfully!',
-      result: newProject,
-    });
-
-  } catch (error) {
-    return res.status(500).json({ message: 'Project Cannot be created', error: error });
-  }
-};
+import { Request, Response, NextFunction, response } from "express";
+import service from "../service/index.js";
+import FILE_CONSTANTS from "../constants/index.js";
+import {
+  ICreateProjectRequestDto,
+  IUpdateProjectRequestDto,
+} from "../dto/request/project-request-dto.js";
+import {
+  ICreateProjectResponseDto,
+  IGetAllProjectsResponseDto,
+  IGetProjectResponseDto,
+  IUpdateProjectResponseDto,
+  IDeleteProjectResponseDto,
+} from "../dto/response/project-response-dto.js";
 
 /**
- * 
- * @returns all  project
- */
-
-export const getAllProjects = async (req: Request, res: Response, next: NextFunction) => {
-
-  // Query to get all projects
-  try {
-    const projects = await model.Project.findAll();
-
-    return res.status(200).json({
-      message: 'Projects fetched successfully!',
-      result: projects,
-    });
-  }
-  catch (error) {
-    return res.status(500).json({
-      message: 'Projects not fetched successfully!'
-    });
-  }
-
-};
-
-
-/**
- * 
- * @param projectId
- * @returns single project details
- * 
- */
-
-export const getProjectById = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const id = parseInt(req.params.projectId);
-
-    // Query to get single project details
-    const projectDetails = await model.Project.findOne({
-      where: {
-        id: id
-      }
-    });
-
-    if (!projectDetails) {
-      return res.status(400).json({
-        message: 'Project not found!',
-        result: projectDetails
-      });
-    }
-
-    return res.status(200).json({
-      message: 'Project fetched successfully!',
-      result: projectDetails
-    });
-  } catch (error) {
-    return res.status(500).json({ message: 'Project cannot be fetched!' });
-  }
-};
-
-/**
- * 
- * @param  projectId
- * @param  name
- * @param description
- * 
- */
-
-export const updateProject = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const id = parseInt(req.params.projectId);
-
-    const { name, description } = req.body;
-
-    if (!name || !description) {
-      return res
-        .status(400)
-        .json({ message: 'Name and description are required!' });
-    }
-
-    const projectDetails = await model.Project.findOne(
-      {
-        where: {
-          id: id
-        }
-      }
-    );
-
-    //Query to update the project
-
-    const project = await model.Project.update(
-      {
-        name: name,
-        description: description,
-        files_count: projectDetails.files_count,
-        jobs_count: projectDetails.jobs_count,
-        updated_at: new Date().toLocaleString()
-      },
-      {
-        where: {
-
-          id: id
-        }
-      }
-    );
-
-    return res.status(200).json({
-      message: 'Project updated successfully!',
-      result: {
-        name: name,
-        description: description,
-        files_count: projectDetails.files_count,
-        jobs_count: projectDetails.jobs_count,
-        created_at: projectDetails.created_at
-      },
-    });
-
-
-  } catch (error) {
-    return res.status(500).json({ message: 'Project cannot be updated !' });
-  }
-};
-
-/**
- * 
- * @param projectId 
+ * Creates a new project.
  *
- * 
+ * @param req - Express request containing project details.
+ * @param res - Express response used to return the created project.
+ * @param next - Express middleware function for error handling.
+ * @returns A JSON response containing the created project details.
  */
-export const deleteProject = async (req: Request, res: Response, next: NextFunction) => {
+export const createProject = async (
+  req: Request<{}, {}, ICreateProjectRequestDto>,
+  res: Response<ICreateProjectResponseDto>,
+  next: NextFunction
+) => {
   try {
-    const id = parseInt(req.params.projectId);
+    const response = await service.project.createProjectService(req.body);
 
-    //Query to delete project
-    await model.Job.destroy({
-      where: {
-        project_id: id
-      }
-    });
-    
-    await model.File.destroy({
-      where: {
-        project_id: id
-      }
-    });
-    
-    await model.Project.destroy({
-      where: {
-        id: id
-      }
-    });
-
-    return res.status(200).json({
-      message: 'Project deleted successfully!',
-    });
+    return res
+      .status(FILE_CONSTANTS.HTTP_STATUS.CREATED)
+      .json(response);
   } catch (error) {
-    return res.status(500).json({ message: 'Project cannot be deleted!'});
+    next(error);
   }
 };
 
+/**
+ * Retrieves all projects.
+ *
+ * @param req - Express request object.
+ * @param res - Express response used to return all projects.
+ * @param next - Express middleware function for error handling.
+ * @returns A JSON response containing all projects.
+ */
+export const getAllProjects = async (
+  req: Request,
+  res: Response<IGetAllProjectsResponseDto>,
+  next: NextFunction
+) => {
+  try {
+    const project = await service.project.getAllProjectsService();
+
+    const response:IGetAllProjectsResponseDto = {
+      message:FILE_CONSTANTS.MESSAGES.PROJECT.FETCH_SUCCESS,
+      result:project.result
+    }
+
+
+
+    return res
+      .status(FILE_CONSTANTS.HTTP_STATUS.OK)
+      .json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Retrieves a project by its ID.
+ *
+ * @param req - Express request containing the project ID.
+ * @param res - Express response used to return the project.
+ * @param next - Express middleware function for error handling.
+ * @returns A JSON response containing the requested project.
+ */
+export const getProjectById = async (
+  req: Request<{ projectId: string }>,
+  res: Response<IGetProjectResponseDto>,
+  next: NextFunction
+) => {
+  try {
+    const response = await service.project.getProjectByIdService(
+      Number(req.params.projectId)
+    );
+
+    return res
+      .status(FILE_CONSTANTS.HTTP_STATUS.OK)
+      .json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Updates an existing project.
+ *
+ * @param req - Express request containing the project ID and updated project details.
+ * @param res - Express response used to return the updated project.
+ * @param next - Express middleware function for error handling.
+ * @returns A JSON response containing the updated project details.
+ */
+export const updateProject = async (
+  req: Request<{ projectId: string }, {}, IUpdateProjectRequestDto>,
+  res: Response<IUpdateProjectResponseDto>,
+  next: NextFunction
+) => {
+  try {
+    const response = await service.project.updateProjectService(
+      Number(req.params.projectId),
+      req.body
+    );
+
+    return res
+      .status(FILE_CONSTANTS.HTTP_STATUS.OK)
+      .json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Deletes a project and its associated files and jobs.
+ *
+ * @param req - Express request containing the project ID.
+ * @param res - Express response confirming deletion.
+ * @param next - Express middleware function for error handling.
+ * @returns A JSON response indicating successful deletion.
+ */
+export const deleteProject = async (
+  req: Request<{ projectId: string }>,
+  res: Response<IDeleteProjectResponseDto>,
+  next: NextFunction
+) => {
+  try {
+    const response = await service.project.deleteProjectService(
+      Number(req.params.projectId)
+    );
+
+    return res
+      .status(FILE_CONSTANTS.HTTP_STATUS.OK)
+      .json(response);
+  } catch (error) {
+    next(error);
+  }
+};

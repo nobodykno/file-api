@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 import "./models/index.js";
 import mainRoute from "./route/main-route.js";
+import { globalErrorHandler } from "./middleware/global-error.js";
 
 dotenv.config();
 
@@ -32,5 +33,6 @@ app.get("/", (req, res) => {
   });
 });
 
+app.use(globalErrorHandler)
 
 export default app;

@@ -1,15 +1,17 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database.js";
 import { IJobAttributes } from "../types/job-type.js";
+import { ICreateJobRequestDto } from "../dto/request/job-request-dto.js";
 
 
-class Job extends Model<IJobAttributes> implements IJobAttributes {
+class Job extends Model<IJobAttributes, ICreateJobRequestDto> implements IJobAttributes {
   declare id: number;
-  declare project_id: number | null;
+  declare project_id: number | 0;
   declare status: string;
   declare progress: number;
   declare outputPath: string | null;
   declare completedAt: Date | null;
+  declare fileIds: number[];
 }
 
 Job.init(
@@ -37,6 +39,11 @@ Job.init(
     progress: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+    },
+
+    fileIds: {
+      type: DataTypes.ARRAY,
+      defaultValue: [],
     },
 
     outputPath: {

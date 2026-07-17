@@ -1,298 +1,222 @@
+import { Request, Response, NextFunction } from "express";
+import service from "../service/index.js";
+import FILE_CONSTANTS from "../constants/index.js";
 
-// const model = require('../models/index');
-// const path = require('path');
-// const fs = require('fs');
-// const archiver = require('archiver');
 
-// /**
-//  * 
-//  * @param ProjectId
-//  * @param fieldId
-//  * 
-//  */
+/**
+ * Creates a new job for selected project files.
+ *
+ * @param req - Express request object containing projectId and selected fileIds.
+ * @param res - Express response object.
+ * @param next - Express next middleware function for error handling.
+ *
+ * @returns Created job details.
+ */
+export const createJob = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
 
-// const createJob = async (req, res) => {
-//   try {
+    try {
 
-//     const projectId = parseInt(req.params.projectId);
-//     const { fileIds } = req.body;
+        const projectId = Number(req.params.projectId);
 
+        const response =
+            await service.job.createJobService(
+                projectId,
+                req.body
+            );
 
-//     if (!fileIds || fileIds.length === 0) {
-//       return res.status(400).json({
-//         message: 'Please select at least one file!'
-//       });
-//     }
-
-
-//     const files = await model.File.findAll({
-//       where: {
-//         id: fileIds,
-//         project_id: projectId
-//       }
-//     });
-
-
-//     if (files.length === 0) {
-//       return res.status(404).json({
-//         message: 'No files found with given ids!'
-//       });
-//     }
 
+        return res
+            .status(FILE_CONSTANTS.HTTP_STATUS.CREATED)
+            .json(response);
 
-//     const job = await model.Job.create({
-//       project_id: projectId,
-//       status: 'PENDING',
-//       progress: 0,
-//       fileIds: JSON.stringify(fileIds)
-//     });
 
+    } catch (error) {
 
+        next(error);
 
-//     res.status(201).json({
-//       message: 'Job created successfully!',
-//       result: job
-//     });
+    }
 
+};
 
-//     processZipJob(job.id, files);
 
-//   } catch (err) {
-//     return res.status(500).json({
-//       message: 'Job not created!',
 
-//     });
 
-//   }
-// };
 
-// /**
-//  * 
-//  * @param JobId
-//  * @param files
-//  *  Process zip files
-//  */
-// const processZipJob = async (jobId, files) => {
-//   try {
+/**
+ * Fetches all jobs associated with a project.
+ *
+ * @param req - Express request object containing projectId.
+ * @param res - Express response object.
+ * @param next - Express next middleware function.
+ *
+ * @returns List of project jobs.
+ */
+export const getAllJobs = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
 
-//     //Query to update job status
-//     await model.Job.update(
-//       { status: 'RUNNING', progress: 10 },
-//       { where: { id: jobId } }
-//     );
 
-//     const outputFolder = path.join(__dirname, '../zipfiles');
-//     if (!fs.existsSync(outputFolder)) {
-//       fs.mkdirSync(outputFolder);
-//     }
-//     let totalSize = 0;
-//     files.forEach((file) => {
-//       totalSize += file.size;
-//     });
+    try {
 
-//     const zipFileName = `job-${jobId}-output.zip`;
-//     const zipFilePath = path.join(outputFolder, zipFileName);
 
+        const projectId =
+            Number(req.params.projectId);
 
-//     await createZipFile(zipFilePath, files, jobId, totalSize);
 
-//     //Query to update job status
-//     await model.Job.update(
-//       {
-//         status: 'COMPLETED',
-//         progress: 100,
-//         outputPath: zipFilePath,
-//         completedAt: new Date()
-//       },
-//       { where: { id: jobId } }
-//     );
 
+        const jobs =
+            await service.job.getAllJobsService(
+                projectId
+            );
 
-//   } catch (err) {
-//     //Query to update job status
-//     await model.Job.update(
-//       { status: 'FAILED', progress: 0 },
-//       { where: { id: jobId } }
-//     );
 
-//   }
-// };
 
-// /**
-//  * 
-//  * @param {*} Storedzipfilepath 
-//  * @param {*} files 
-//  * @param {*} jobId 
-//  * @param {*} totalSize 
-//  * 
-//  */
+        return res
+            .status(FILE_CONSTANTS.HTTP_STATUS.OK)
+            .json({
 
-// const createZipFile = (zipFilePath, files, jobId, totalSize) => {
-//   return new Promise((resolve, reject) => {
+                message:
+                    FILE_CONSTANTS.MESSAGES.JOB.FETCH_SUCCESS,
 
-//     const output = fs.createWriteStream(zipFilePath);
-//     const archive = archiver('zip', { zlib: { level: 9 } });
+                result: jobs
 
+            });
 
-//     archive.on('progress', async (progressData) => {
 
+    }
+    catch (error) {
 
-//       const processedSize = progressData.fs.processedBytes;
+        next(error);
 
-
-//       let percent = 0;
-//       if (totalSize > 0) {
-//         percent = Math.floor((processedSize / totalSize) * 100);
-//       }
+    }
 
 
-//       if (percent > 99) { percent = 99; }
-
-//       await model.Job.update(
-//         { progress: percent },
-//         { where: { id: jobId } }
-//       );
-//     });
+};
 
-//     output.on('close', async () => {
-//       await model.Job.update(
-//         { progress: 90 },
-//         { where: { id: jobId } }
-//       );
-//       resolve();
-//     });
 
-//     archive.on('error', (err) => reject(err));
-
-//     archive.pipe(output);
 
 
-//     files.forEach((file) => {
-//       if (fs.existsSync(file.path)) {
-//         archive.file(file.path, { name: file.name });
-//       }
-//     });
 
-//     archive.finalize();
-//   });
-// };
 
+/**
+ * Fetches job status by jobId.
+ *
+ * @param req - Express request object containing projectId and jobId.
+ * @param res - Express response object.
+ * @param next - Express next middleware function.
+ *
+ * @returns Job status details.
+ */
+export const getJobStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
 
-// /**
-//  * 
-//  * @param {*} ProjectId 
-//  * 
-//  */
 
-// const getAllJobs = async (req, res) => {
-//   try {
+    try {
 
-//     const projectId = parseInt(req.params.projectId);
-
-//     //Query to fimnd all jobs belongs to project
-//     const jobs = await model.Job.findAll({
-//       where: { project_id: projectId },
-//       order: [['createdAt', 'DESC']]
-//     });
-
-//     res.status(200).json({
-//       message: 'Jobs fetched successfully!',
-//       result: jobs
-//     });
-
-//   } catch (err) {
-//     res.status(500).json({
-//       message: 'Error in fetching  jobs!',
-//       err
-//     });
-//   }
-// };
-// /**
-//  * 
-//  * @param {*} jobId 
-//  * @param {*} projectId 
-//  * 
-//  */
-
-// const getJobStatus = async (req, res) => {
-//   try {
-
-//     const jobId = parseInt(req.params.jobId);
-//     const projectId = parseInt(req.params.projectId);
-
-//     //Query to fimnd all jobs status
-
-//     const job = await model.Job.findOne({
-//       where: { id: jobId, project_id: projectId }
-//     });
-
-//     if (!job) {
-//       return res.status(404).json({ message: 'Job not found!' });
-//     }
-
-//     return res.status(200).json({
-//       message: 'Job fetched successfully!',
-//       result:job
-//     });
-
-//   } catch (err) {
-//     return res.status(500).json({
-//       message: 'Job not fetched!',
-//     });
-//   }
-// };
-
-
-// /**
-//  * 
-//  * @param {*} jobId 
-//  * @param {*} projectId 
-//  * 
-//  */
-
-// const downloadOutput = async (req, res) => {
-//   try {
-
-//     const jobId = parseInt(req.params.jobId);
-//     const projectId = parseInt(req.params.projectId);
-
-//     // Query to find job 
-//     const job = await model.Job.findOne({
-//       where: { id: jobId, project_id: projectId }
-//     });
-
-//     if (!job) {
-//       return res.status(404).json({ message: 'Job not found!' });
-//     }
-
-
-//     if (job.status !== 'COMPLETED') {
-//       return res.status(400).json({
-//         message: `Job is ${job.status}. Please wait until COMPLETED!`
-//       });
-//     }
-
-
-//     if (!job.outputPath || !fs.existsSync(job.outputPath)) {
-//       return res.status(404).json({
-//         message: 'Output file not found!'
-//       });
-//     }
-
-//     // Download file
-//     const zipFileName = `job-${jobId}-output.zip`;
-//     res.download(job.outputPath, zipFileName);
-
-//   } catch (err) {
-//     return res.status(500).json({
-//       message: 'Error in downloading!'
-//     });
-//   }
-// };
-
-// module.exports = {
-//   createJob,
-//   getJobStatus,
-//   getAllJobs,
-//   downloadOutput
-// };
+
+        const projectId =
+            Number(req.params.projectId);
+
+
+        const jobId =
+            Number(req.params.jobId);
+
+
+
+        const response =
+            await service.job.getJobStatusService(
+                projectId,
+                jobId
+            );
+
+
+
+        return res
+            .status(FILE_CONSTANTS.HTTP_STATUS.OK)
+            .json(response);
+
+
+
+    }
+    catch (error) {
+
+        next(error);
+
+    }
+
+
+};
+
+
+
+
+
+
+
+
+/**
+ * Downloads the generated zip file for a completed job.
+ *
+ * @param req - Express request object containing projectId and jobId.
+ * @param res - Express response object used to send the file.
+ * @param next - Express next middleware function.
+ *
+ * @returns Downloads generated zip file.
+ */
+export const downloadOutput = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+
+
+    try {
+
+
+        const projectId =
+            Number(req.params.projectId);
+
+
+        const jobId =
+            Number(req.params.jobId);
+
+
+
+        const filePath =
+            await service.job.downloadOutputService(
+                projectId,
+                jobId
+            );
+
+
+
+        const fileName =
+            `job-${jobId}-output.zip`;
+
+
+
+        return res.download(
+            filePath,
+            fileName
+        );
+
+
+
+    }
+    catch (error) {
+
+        next(error);
+
+    }
+
+
+};
