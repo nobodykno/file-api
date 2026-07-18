@@ -64,6 +64,41 @@ const MESSAGES = {
   CREATE_FAILED:"Job not created!",
 
   COMPLETE_STATUS: "Job completed successfully"
+  },
+
+  FILE : {
+    NO_FILES_UPLOADED: "No files uploaded!",
+    UPLOAD_SUCCESS: "Files uploaded successfully!",
+    FETCH_SUCCESS: "Files fetched successfully!",
+    FILE_NOT_FOUND: "File not found!",
+    DELETE_SUCCESS: "File deleted successfully!"
+  },
+
+  MODULE: {
+    PROJECT: 'Project',
+    FILE: 'File',
+    JOBS: 'Jobs',
+    AUTH: 'Auth'
+  },
+
+  ACTION: {
+    CREATE: 'Create',
+    UPDATE: 'Update',
+    DELETE: 'Delete',
+    GET: 'Get',
+    COMPLETE : 'Complete'
+  },
+
+  MIGRATIONS: {
+   MIGRATION_RUNNING: "Running migrations..",
+   ALL_MIGRATION_COMPLETED:"All migrations completed",
+   MIGRATION_FAILED :"Migration failed",
+    ROLLED_BACK: "Rolled back",
+    NO_MIGRATIONS_ROLLED_BACK: "No migrations to rollback."
+  },
+
+  COMMON:{
+    SERVER_ERROR: "Something went wrong!"
   }
 
 };

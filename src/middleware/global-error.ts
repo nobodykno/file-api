@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import FILE_CONSTANTS from "../constants/index.js";
 import { AppError } from "./app-error.js";
+import logger from "../config/logger.js";
 
 /**
  * Global error handling middleware.
@@ -13,23 +14,36 @@ import { AppError } from "./app-error.js";
  * @param next - Express next middleware function.
  * @returns A JSON response containing the error message.
  */
-export const globalErrorHandler = (
+ const globalErrorHandler = (
   err: Error,
   req: Request,
-  res: Response,
-  next: NextFunction
-): Response => {
+  res: Response) => {
+
+
+  logger.error({
+    message: err.message,
+    stack: err.stack,
+    method: req.method,
+    url: req.originalUrl,
+    ip: req.ip,
+  });
+
     if (err instanceof AppError) {
+      logger.error( err.message,);
         return res.status(err.statusCode).json({
           message: err.message,
         });
+       
+
       }
 
-  console.error("Unhandled Error:", err);
+
 
   return res
     .status(FILE_CONSTANTS.HTTP_STATUS.INTERNAL_SERVER_ERROR)
     .json({
-      message:"error"
+      message:FILE_CONSTANTS.MESSAGES.COMMON.SERVER_ERROR
     });
 };
+
+export default globalErrorHandler

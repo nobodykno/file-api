@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
+import "./config/env.js";
 import app from "./app.js";
 import sequelize from "./config/database.js";
 
-dotenv.config();
+
 
 const PORT = process.env.PORT || 5000;
 
@@ -13,15 +13,6 @@ const startServer = async (): Promise<void> => {
     await sequelize.authenticate();
 
     console.log("✅ Database connected");
-
-
-    // Step 2 — Sync models
-    await sequelize.sync({
-      alter: true
-    });
-
-    console.log("✅ Database synced");
-
 
     // Step 3 — Start server
     app.listen(PORT, () => {
@@ -35,6 +26,8 @@ const startServer = async (): Promise<void> => {
 
     process.exit(1);
   }
+
+  console.log("After app.listen");
 };
 
 

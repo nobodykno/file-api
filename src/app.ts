@@ -1,12 +1,15 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+
 
 import "./models/index.js";
 import mainRoute from "./route/main-route.js";
-import { globalErrorHandler } from "./middleware/global-error.js";
+import globalErrorHandler from "./middleware/global-error.js";
+import morganMiddleware from "./config/morgan.js";
 
-dotenv.config();
+import helmet from "helmet";
+// const require = createRequire(import.meta.url);
+// const helmet = require("helmet");
 
 const app = express();
 
@@ -15,6 +18,11 @@ app.use(cors());
 
 app.use(express.json());
 
+app.use(
+  helmet()
+);
+
+app.use(morganMiddleware);
 
 // Routes
 app.use("/v1", mainRoute);
