@@ -1,191 +1,84 @@
+import { Request, Response, NextFunction } from "express";
+import FILE_CONSTANTS from "../constants/index.js";
+import service from "../service/index.js";
 
-
-const model = require('../models/index');
-const fs = require('fs');
 
 /**
- * 
- * @param multiplefiles 
- * 
- *  
+ * Upload one or more files to a project.
+ *
+ * @param req Express request object.
+ * @param res Express response object.
+ * @param next Express next middleware.
+ * @returns Uploaded file details.
  */
-const uploadFiles = async (req, res) => {
+export const uploadFiles = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const projectId = +req.params.projectId;
-
-
-
-    if (!projectId) {
-      return res.status(404).json({ message: 'Project not found!' });
-    }
-
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ message: 'No files uploaded!' });
-    }
-
-
-    const newFiles = req.files.map((file) => ({
-      project_id: projectId,
-      name: file.originalname,
-      file_name: file.filename,
-      size: file.size,
-      mime_type: file.mimetype,
-      path: file.path,
-      uploadedAt: new Date().toLocaleString()
-    }));
-
-    // Query to create bulk files
-    const filedata = await model.File.bulkCreate(newFiles);
-
-
-    const fileCount = await model.File.count({
-      where: {
-        project_id: projectId
-      }
-    });
-
-
-    // Query to update project details
-    await model.Project.update(
-      {
-        files_count: fileCount
-      },
-      {
-        where: {
-          id: projectId
-        }
-      }
+    const response = await service.file.uploadFilesService(
+      Number(req.params.projectId),
+      req.files as Express.Multer.File[]
     );
 
-
-
-    return res.status(201).json({
-      message: 'Files uploaded successfully!',
-      result: filedata
-    });
-
-
-
-  } catch (err) {
-    if (err.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({ message: 'File size too large! Max 10MB allowed.' });
-    }
-
-    return res.status(500).json({ message: 'Upload failed!', error: err });
-  }
-
-};
-
-/** 
- *  
- * @param projectId
- * 
- * Get all project files
- * 
- */
-const getProjectFiles = async (req, res) => {
-
-  try {
-
-    const projectId = parseInt(req.params.projectId);
-
-
-    if (!projectId) {
-      return res.status(404).json({ message: 'Project not found!' });
-    }
-
-    // Query to find all files belongs to the project
-    const projectFiles = await model.File.findAll({
-      where: {
-        project_id: projectId
-      }
-    });
-
-    return res.status(200).json({
-      message: 'Files fetched successfully!',
-      count: projectFiles.length,
-      result: projectFiles
-    });
-
-  } catch (err) {
-    return res.status(500).json({ message: 'Server error!' });
+    return res
+      .status(FILE_CONSTANTS.HTTP_STATUS.CREATED)
+      .json(response);
+  } catch (error) {
+    next(error);
   }
 };
 
-/** 
- *  
- * @param projectId
- * @param fileId
- * 
- * delete a file
- * 
+/**
+ * Fetch all files belonging to a project.
+ *
+ * @param req Express request object.
+ * @param res Express response object.
+ * @param next Express next middleware.
+ * @returns List of project files.
  */
-const deleteFile = async (req, res) => {
+export const getProjectFiles = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const projectId = Number(req.params.projectId);
-    const fileId = Number(req.params.fileId);
-
-
-
-    //Query to check file exist or not
-
-    const file = await model.File.findOne({
-      where: {
-        id: fileId,
-      }
-    });
-
-    if (!file) {
-      return res.status(404).json({
-        message: 'File not found!'
-      });
-    }
-    // Query to delete a file
-    await model.File.destroy({
-      where: {
-        id: fileId,
-        project_id: projectId
-      }
-    });
-
-    // Query to count number of files
-    const fileCount = await model.File.count({
-      where: {
-        project_id: projectId
-      }
-    });
-
-    // Query to update file count in project
-    await model.Project.update(
-      {
-        files_count: fileCount
-      },
-      {
-        where: {
-          id: projectId
-        }
-      }
+    const response = await service.file.getProjectFilesService(
+      Number(req.params.projectId)
     );
 
-    // Delete physical file
-    if (fs.existsSync(file.path)) {
-      fs.unlinkSync(file.path);
-    }
-
-    return res.status(200).json({
-      message: 'File deleted successfully!'
-    });
-  } catch (err) {
-    return res.status(500).json({
-      message: 'Server error!',
-      error: err.message
-    });
+    return res
+      .status(FILE_CONSTANTS.HTTP_STATUS.OK)
+      .json(response);
+  } catch (error) {
+    next(error);
   }
 };
 
+/**
+ * Delete a project file.
+ *
+ * @param req Express request object.
+ * @param res Express response object.
+ * @param next Express next middleware.
+ * @returns Success response after deletion.
+ */
+export const deleteFile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const response = await service.file.deleteFileService(
+      Number(req.params.projectId),
+      Number(req.params.fileId)
+    );
 
-module.exports = {
-  uploadFiles,
-  getProjectFiles,
-  deleteFile
+    return res
+      .status(FILE_CONSTANTS.HTTP_STATUS.OK)
+      .json(response);
+  } catch (error) {
+    next(error);
+  }
 };

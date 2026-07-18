@@ -10,26 +10,21 @@ import { IErrorResponseDto } from "../dto/response/error-response-dto.js";
 dotenv.config();
 
 
-export const login = async (req: Request<{},{},ILoginRequestDto>, res: Response<ILoginResponseDto | IErrorResponseDto>, next: NextFunction) => {
+export const login = async (req: Request<ILoginRequestDto>, res: Response<ILoginResponseDto>, next: NextFunction) => {
 
   try {
     const loginInfo:ILoginRequestDto = req.body;
 
     //Database query to find the particular user with Id
-    const logIn = await service.loginService(loginInfo)
+    const logIn = await service.auth.loginService(loginInfo)
 
 
     res.status(FILE_CONSTANTS.HTTP_STATUS.OK).json(logIn);
 
   }
   catch (error) {
-    return res
-      .status(FILE_CONSTANTS.HTTP_STATUS.INTERNAL_SERVER_ERROR)
-      .json({
-        message: "Failed to login",
-        error
-      });
-  }
+   next(error)
+    }
 
 };
 

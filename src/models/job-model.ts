@@ -42,7 +42,7 @@ Job.init(
     },
 
     fileIds: {
-      type: DataTypes.ARRAY,
+      type: DataTypes.ARRAY(DataTypes.INTEGER),
       defaultValue: [],
     },
 

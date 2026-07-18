@@ -24,8 +24,6 @@ export const globalErrorHandler = (
           message: err.message,
         });
       }
-    
-      console.error(err);
 
   console.error("Unhandled Error:", err);
 

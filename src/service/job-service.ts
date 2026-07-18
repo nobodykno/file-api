@@ -45,8 +45,15 @@ export const createJobService = async (
         }
     });
 
+    const fileCount =  await model.File.count({
+        where: {
+            id: jobInfo.fileIds,
+            project_id: projectId
+        }
+    });
 
-    if (files.length === 0) {
+
+    if (fileCount === 0) {
 
         throw new AppError(
             FILE_CONSTANTS.MESSAGES.JOB.FILE_NOT_FOUND,

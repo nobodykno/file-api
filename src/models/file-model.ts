@@ -1,19 +1,19 @@
 
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database.js";
-import { IFileAttributes } from "../types/file-type.js";
+import { IFileAttributes, IFileCreationAttributes } from "../types/file-type.js";
 
 
 
-class File extends Model<IFileAttributes> implements IFileAttributes {
+class File extends Model<IFileAttributes, IFileCreationAttributes> implements IFileAttributes {
   declare id: number;
-  declare project_id: number | null;
+  declare project_id: number;
   declare name: string;
   declare file_name: string;
   declare size: number;
-  declare mime_type: string | null;
-  declare path: string | null;
-  declare uploaded_at: Date;
+  declare mime_type: string;
+  declare path: string;
+  declare uploadedAt: Date;
 }
 
 File.init(
@@ -58,7 +58,7 @@ File.init(
       allowNull: true,
     },
 
-    uploaded_at: {
+    uploadedAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
