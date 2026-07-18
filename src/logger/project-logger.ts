@@ -1,55 +1,56 @@
-import { logSuccess } from "../middleware/success-logger.js";
+import FILE_CONSTANTS from "../constants/index.js";
+import middleware from "../middleware/index.js";
 
  const  projectLogger = {
   created(projectId: number) {
-    logSuccess({
-      module: "Project",
-      action: "CREATE",
-      message: "Project created successfully",
+    middleware.logSuccess({
+      module: FILE_CONSTANTS.MESSAGES.MODULE.PROJECT,
+      action: FILE_CONSTANTS.MESSAGES.ACTION.CREATE,
+      message: FILE_CONSTANTS.MESSAGES.PROJECT.CREATE_SUCCESS,
       data: {
-        projectId: projectId
+        projectId
       },
     });
   },
 
   updated(projectId: number) {
-    logSuccess({
-      module: "Project",
-      action: "UPDATE",
-      message: "Project updated successfully",
+    middleware.logSuccess({
+      module: FILE_CONSTANTS.MESSAGES.MODULE.PROJECT,
+      action: FILE_CONSTANTS.MESSAGES.ACTION.UPDATE,
+      message: FILE_CONSTANTS.MESSAGES.PROJECT.UPDATE_SUCCESS,
       data: {
-        projectId: projectId
+        projectId
       },
     });
   },
 
   deleted(projectId: number) {
-    logSuccess({
-      module: "Project",
-      action: "DELETE",
-      message: "Project deleted successfully",
+    middleware.logSuccess({
+      module: FILE_CONSTANTS.MESSAGES.MODULE.PROJECT,
+      action: FILE_CONSTANTS.MESSAGES.ACTION.DELETE,
+      message: FILE_CONSTANTS.MESSAGES.PROJECT.DELETE_SUCCESS,
       data: {
-        projectId:projectId,
+        projectId,
       },
     });
   },
 
   fetched(projectId: number) {
-    logSuccess({
-      module: "Project",
-      action: "GET",
-      message: "Project fetched successfully",
+    middleware.logSuccess({
+      module: FILE_CONSTANTS.MESSAGES.MODULE.PROJECT,
+      action: FILE_CONSTANTS.MESSAGES.ACTION.GET,
+      message: FILE_CONSTANTS.MESSAGES.PROJECT.FETCH_SUCCESS,
       data: {
-        projectId: projectId,
+        projectId,
       },
     });
   },
 
   fetchedAll(count: number) {
-    logSuccess({
-      module: "Project",
-      action: "GET_ALL",
-      message: "Projects fetched successfully",
+    middleware.logSuccess({
+      module: FILE_CONSTANTS.MESSAGES.MODULE.PROJECT,
+      action: FILE_CONSTANTS.MESSAGES.ACTION.GET,
+      message: FILE_CONSTANTS.MESSAGES.PROJECT.FETCH_ALL_SUCCESS,
       data: {
         totalProjects: count,
       },
@@ -58,4 +59,4 @@ import { logSuccess } from "../middleware/success-logger.js";
 };
 
 
-export default projectLogger
+export default projectLogger;

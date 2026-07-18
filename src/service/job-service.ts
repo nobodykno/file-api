@@ -1,27 +1,26 @@
-import model from "../models/index.js";
 
 
 
-import {
+import fs from "fs";
+import path from "path";
+
+
+import archiver from 'archiver';
+
+import FILE_CONSTANTS from "../constants/index.js";
+import type {
     ICreateJobRequestDto
 } from "../dto/request/job-request-dto.js";
-
-import {
+import type {
     ICreateJobResponseDto,
     IGetJobResponseDto,
-    IGetJobStatusResponseDto,
-    IJobDto
+    IGetJobStatusResponseDto
 } from "../dto/response/job-response-dto.js";
-
-
-import path from "path";
-import fs from "fs";
-import archiver from 'archiver'
-
 import { AppError } from "../middleware/app-error.js";
-import FILE_CONSTANTS from "../constants/index.js";
-import { measureMemory } from "vm";
+import model from "../models/index.js";
+import logger from "../logger/index.js";
 
+import idValidators from "../utils/id-validator.js";
 
 
 export const createJobService = async (
@@ -29,6 +28,9 @@ export const createJobService = async (
     jobInfo: ICreateJobRequestDto
 ): Promise<ICreateJobResponseDto> => {
 
+    idValidators.validateProjectId(projectId);
+
+    const project = await model.Project.findByPk(projectId);
 
     if (!jobInfo.fileIds || jobInfo.fileIds.length === 0) {
         throw new AppError(
@@ -38,19 +40,13 @@ export const createJobService = async (
     }
 
 
-    const files = await model.File.findAll({
+    const files = await project?.getFiles({
         where: {
             id: jobInfo.fileIds,
-            project_id: projectId
         }
     });
 
-    const fileCount =  await model.File.count({
-        where: {
-            id: jobInfo.fileIds,
-            project_id: projectId
-        }
-    });
+    const fileCount = await project?.countFiles();
 
 
     if (fileCount === 0) {
@@ -69,8 +65,9 @@ export const createJobService = async (
         fileIds: jobInfo.fileIds
     });
 
+    logger.jobLogger.created(job.id);
 
-    processZipJob(job.id, files);
+    void processZipJob(job.id, files);
 
 
     return {
@@ -133,7 +130,6 @@ const processZipJob = async (
         await createZipFile(
             zipFilePath,
             files,
-            jobId
         );
 
 
@@ -157,6 +153,7 @@ const processZipJob = async (
     }
     catch (error) {
 
+        logger.jobLogger.errorZip(jobId, error);
 
         await model.Job.update(
             {
@@ -171,6 +168,7 @@ const processZipJob = async (
         );
 
 
+
     }
 
 };
@@ -182,7 +180,6 @@ const processZipJob = async (
 const createZipFile = (
     zipFilePath: string,
     files: any[],
-    jobId: number
 ) => {
 
 
@@ -195,9 +192,9 @@ const createZipFile = (
 
         const archive = archiver.create("zip", {
             zlib: {
-              level: 9
+                level: 9
             }
-          })
+        });
 
 
         archive.pipe(output);
@@ -234,7 +231,7 @@ const createZipFile = (
         );
 
 
-        archive.finalize();
+        void archive.finalize();
 
 
 
@@ -252,24 +249,30 @@ export const getAllJobsService = async (
 ): Promise<IGetJobResponseDto> => {
 
 
+    if (!projectId) {
+        throw new AppError(
+            FILE_CONSTANTS.MESSAGES.PROJECT.PROJECT_NOT_FOUND,
+            400
+        );
+    }
+
+    const project = await model.Project.findByPk(projectId);
+
     const jobs =
-        await model.Job.findAll({
-
-            where: {
-                project_id: projectId
-            },
-
+        await project!.getJobs({
             order: [
                 ["createdAt", "DESC"]
             ]
-
         });
 
+    const jobCount =  await project!.countJobs();
 
-        const response:IGetJobResponseDto = {
-            message:FILE_CONSTANTS.MESSAGES.JOB.FETCH_SUCCESS,
-            result:jobs
-        }
+    logger.jobLogger.fetchedAll(jobCount);
+
+    const response: IGetJobResponseDto = {
+        message: FILE_CONSTANTS.MESSAGES.JOB.FETCH_SUCCESS,
+        result: jobs
+    };
 
 
     return response;
@@ -286,6 +289,21 @@ export const getJobStatusService = async (
     jobId: number
 ): Promise<IGetJobStatusResponseDto> => {
 
+    if (!projectId) {
+        throw new AppError(
+            FILE_CONSTANTS.MESSAGES.PROJECT.PROJECT_NOT_FOUND,
+            400
+        );
+    }
+
+    if (!jobId) {
+
+        throw new AppError(
+            FILE_CONSTANTS.MESSAGES.JOB.JOB_ID_NOT_FOUND,
+            404
+        );
+
+    }
 
     const job =
         await model.Job.findOne({
@@ -296,8 +314,6 @@ export const getJobStatusService = async (
             }
 
         });
-
-
     if (!job) {
 
         throw new AppError(
@@ -306,29 +322,27 @@ export const getJobStatusService = async (
         );
 
     }
- 
-    if(job.progress > 0 && job.progress < 98){
-      
-        const response: IGetJobStatusResponseDto= {
+
+
+    logger.jobLogger.getStatus(job.id);
+
+    if (job.progress > 0 && job.progress < 98) {
+
+        const response: IGetJobStatusResponseDto = {
 
             message: FILE_CONSTANTS.MESSAGES.JOB.INVALID_STATUS,
             result: job
-          }
-          return response;
+        };
+        return response;
     }
-    else{
-        const response: IGetJobStatusResponseDto= {
+    else {
+        const response: IGetJobStatusResponseDto = {
 
             message: FILE_CONSTANTS.MESSAGES.JOB.INVALID_STATUS,
             result: job
-          }
-          return response;
+        };
+        return response;
     }
-    
-
-
-
-
 };
 
 
@@ -342,6 +356,8 @@ export const downloadOutputService = async (
 ) => {
 
 
+    idValidators.validateProjectId(projectId);
+    idValidators.validateJobId(jobId);
     const job =
         await model.Job.findOne({
 
@@ -382,11 +398,7 @@ export const downloadOutputService = async (
             FILE_CONSTANTS.MESSAGES.JOB.DOWNLOAD_ERROR,
             404
         );
-
     }
-
-
-
     return job.outputPath;
 
 

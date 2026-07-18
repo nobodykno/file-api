@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
-import model from "../models/index.js";
-import { ILoginRequestDto } from "../dto/request/auth-request-dto.js";
-import { ILoginResponseDto } from "../dto/response/auth-response-dto.js";
+
 import FILE_CONSTANTS from "../constants/index.js";
+import type { ILoginRequestDto } from "../dto/request/auth-request-dto.js";
+import type { ILoginResponseDto } from "../dto/response/auth-response-dto.js";
+import model from "../models/index.js";
 
 export const loginService = async (
 loginInfo: ILoginRequestDto
@@ -49,3 +50,33 @@ loginInfo: ILoginRequestDto
 
   return response
 };
+
+
+
+// /**
+//  * Verifies JWT token.
+//  *
+//  * @param token JWT token.
+//  * @returns Decoded payload.
+//  */
+// export const verifyTokenService = (
+//   token: string
+// ): IAuthUserDto => {
+
+//   try {
+
+//     return jwt.verify(
+//       token,
+//       process.env.JWT_SECRET!
+//     ) as IAuthUserDto;
+
+//   } catch {
+
+//     throw new AppError(
+//       "Invalid or expired token.",
+//       401
+//     );
+
+//   }
+
+// };

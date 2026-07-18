@@ -1,7 +1,8 @@
 
 import { DataTypes, Model } from "sequelize";
+
 import sequelize from "../config/database.js";
-import { IFileAttributes, IFileCreationAttributes } from "../types/file-type.js";
+import type { IFileAttributes, IFileCreationAttributes } from "../types/file-type.js";
 
 
 

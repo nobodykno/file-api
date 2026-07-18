@@ -1,10 +1,13 @@
 import model from "../models/index.js";
 
 import FILE_CONSTANTS from "../constants/index.js";
-import { ICreateProjectRequestDto, IUpdateProjectRequestDto } from "../dto/request/project-request-dto.js";
-import { ICreateProjectResponseDto, IDeleteProjectResponseDto, IGetAllProjectsResponseDto, IGetProjectResponseDto, IProjectDto, IUpdateProjectResponseDto } from "../dto/response/project-response-dto.js";
+import type { ICreateProjectRequestDto, IUpdateProjectRequestDto } from "../dto/request/project-request-dto.js";
+import type { ICreateProjectResponseDto, IDeleteProjectResponseDto, IGetAllProjectsResponseDto, IGetProjectResponseDto, IUpdateProjectResponseDto } from "../dto/response/project-response-dto.js";
+
 import { AppError } from "../middleware/app-error.js";
 
+import logger from "../logger/index.js";
+import idValidators from "../utils/id-validator.js";
 ;
 
 
@@ -27,7 +30,7 @@ export const createProjectService = async (
 
   const response: ICreateProjectResponseDto = {
     message: FILE_CONSTANTS.MESSAGES.PROJECT.CREATE_SUCCESS,
-    result:{
+    result: {
       id: newProject.id,
       name: newProject.name,
       description: newProject.description,
@@ -37,7 +40,8 @@ export const createProjectService = async (
       updatedAt: newProject.updatedAt,
     }
   };
-  
+
+  logger.projectLogger.created(newProject.id);
 
   return response;
 };
@@ -48,12 +52,16 @@ export const getAllProjectsService = async (): Promise<IGetAllProjectsResponseDt
 
   const projects = await model.Project.findAll();
 
- const reponse:IGetAllProjectsResponseDto  = {
-  message:FILE_CONSTANTS.MESSAGES.PROJECT.FETCH_ALL_SUCCESS,
-  result:projects
- }
+  const projectCount = await model.Project.count();
 
- return reponse;
+  const response: IGetAllProjectsResponseDto = {
+    message: FILE_CONSTANTS.MESSAGES.PROJECT.FETCH_ALL_SUCCESS,
+    result: projects
+  };
+
+  logger.projectLogger.fetchedAll(projectCount);
+
+  return response;
 };
 
 
@@ -61,6 +69,8 @@ export const getAllProjectsService = async (): Promise<IGetAllProjectsResponseDt
 export const getProjectByIdService = async (
   projectId: number
 ): Promise<IGetProjectResponseDto> => {
+
+  idValidators.validateProjectId(projectId);
 
   const project = await model.Project.findByPk(projectId);
 
@@ -71,9 +81,9 @@ export const getProjectByIdService = async (
     );
   }
 
-  const response:IGetProjectResponseDto = {
+  const response: IGetProjectResponseDto = {
     message: FILE_CONSTANTS.MESSAGES.PROJECT.FETCH_SUCCESS,
-    result:{  
+    result: {
       id: project.id,
       name: project.name,
       description: project.description,
@@ -82,9 +92,9 @@ export const getProjectByIdService = async (
       createdAt: project.createdAt,
       updatedAt: project.updatedAt,
     }
-  }
-
-  return response
+  };
+  logger.projectLogger.fetched(projectId);
+  return response;
 };
 
 
@@ -94,6 +104,7 @@ export const updateProjectService = async (
   projectInfo: IUpdateProjectRequestDto
 ): Promise<IUpdateProjectResponseDto> => {
 
+  idValidators.validateProjectId(projectId);
   if (!projectInfo.name || !projectInfo.description) {
     throw new AppError(
       FILE_CONSTANTS.MESSAGES.PROJECT.NAME_DESCRIPTION_REQUIRED,
@@ -109,7 +120,7 @@ export const updateProjectService = async (
       FILE_CONSTANTS.HTTP_STATUS.NOT_FOUND
     );
   }
-  
+
 
   await project.update({
     name: projectInfo.name,
@@ -117,10 +128,12 @@ export const updateProjectService = async (
     updatedAt: new Date()
   });
 
-  const response:IUpdateProjectResponseDto = {
+  const response: IUpdateProjectResponseDto = {
     message: FILE_CONSTANTS.MESSAGES.PROJECT.UPDATE_SUCCESS,
-    result:project
-  }
+    result: project
+  };
+
+  logger.projectLogger.updated(projectId);
 
   return response;
 };
@@ -131,6 +144,7 @@ export const deleteProjectService = async (
   projectId: number
 ): Promise<IDeleteProjectResponseDto> => {
 
+  idValidators.validateProjectId(projectId);
   const project = await model.Project.findByPk(projectId);
 
   if (!project) {
@@ -155,8 +169,10 @@ export const deleteProjectService = async (
   await project.destroy();
 
   const response: IDeleteProjectResponseDto = {
-    message:FILE_CONSTANTS.MESSAGES.PROJECT.CREATE_SUCCESS
-  }
+    message: FILE_CONSTANTS.MESSAGES.PROJECT.CREATE_SUCCESS
+  };
 
+
+  logger.projectLogger.deleted(projectId);
   return response;
 };

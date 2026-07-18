@@ -1,71 +1,85 @@
-import { logSuccess } from "../middleware/success-logger.js";
+import FILE_CONSTANTS from "../constants/index.js";
+import middleware from "../middleware/index.js";
 
  const jobLogger = {
     created(jobId: number) {
-      logSuccess({
-        module: "Job",
-        action: "CREATE",
-        message: "Job created successfully",
+      middleware.logSuccess({
+        module: FILE_CONSTANTS.MESSAGES.MODULE.JOBS,
+        action: FILE_CONSTANTS.MESSAGES.ACTION.CREATE,
+        message: FILE_CONSTANTS.MESSAGES.JOB.FETCH_SUCCESS,
         data: {
-          jobId: jobId,
+          jobId,
+        },
+      });
+    },
+
+    getStatus(jobId: number) {
+      middleware.logSuccess({
+        module: FILE_CONSTANTS.MESSAGES.MODULE.JOBS,
+        action: FILE_CONSTANTS.MESSAGES.ACTION.GET,
+        message: FILE_CONSTANTS.MESSAGES.JOB.GET_STATUS,
+        data: {
+          jobId,
         },
       });
     },
   
     completed(jobId: number) {
-      logSuccess({
-        module: "Job",
-        action: "COMPLETE",
-        message: "Job completed successfully",
+      middleware.logSuccess({
+        module: FILE_CONSTANTS.MESSAGES.MODULE.JOBS,
+        action: FILE_CONSTANTS.MESSAGES.ACTION.COMPLETE,
+        message: FILE_CONSTANTS.MESSAGES.JOB.COMPLETE_STATUS,
         data: {
-            jobId: jobId,
+            jobId,
         },
       });
     },
-  
-    failed(jobId: number) {
-      logSuccess({
-        module: "Job",
-        action: "FAILED",
-        message: "Job failed",
-        data: {
-            jobId:jobId,
-        },
-      });
-    },
-  
+    
     downloaded(jobId: number) {
-      logSuccess({
-        module: "Job",
-        action: "DOWNLOAD",
-        message: "Zip downloaded successfully",
+      middleware.logSuccess({
+        module: FILE_CONSTANTS.MESSAGES.MODULE.JOBS,
+        action: FILE_CONSTANTS.MESSAGES.ACTION.DOWNLOAD,
+        message: FILE_CONSTANTS.MESSAGES.JOB.DOWNLOAD_SUCCESS,
         data: {
-            jobId:jobId,
+            jobId,
         },
       });
     },
   
-    fetched(jobId: number) {
-      logSuccess({
-        module: "Job",
-        action: "GET",
-        message: "Job fetched successfully",
+    fetched(projectId: number) {
+      middleware.logSuccess({
+        module:  FILE_CONSTANTS.MESSAGES.MODULE.JOBS,
+        action:  FILE_CONSTANTS.MESSAGES.ACTION.GET,
+        message: FILE_CONSTANTS.MESSAGES.JOB.FETCH_SUCCESS,
         data: {
-            jobId: jobId,
+          projectId,
         },
       });
     },
   
     fetchedAll(count: number) {
-      logSuccess({
-        module: "Job",
-        action: "GET_ALL",
-        message: "Jobs fetched successfully",
+      middleware.logSuccess({
+        module: FILE_CONSTANTS.MESSAGES.MODULE.JOBS,
+        action: FILE_CONSTANTS.MESSAGES.ACTION.GET,
+        message: FILE_CONSTANTS.MESSAGES.JOB.FETCH_ALL_JOBS,
         data: {
           totalJobs: count,
         },
       });
     },
+
+    errorZip(jobId: number, error:unknown) {
+      middleware.logError({
+        module: FILE_CONSTANTS.MESSAGES.MODULE.JOBS,
+        action: FILE_CONSTANTS.MESSAGES.ACTION.CREATE_ZIP,
+        message: FILE_CONSTANTS.MESSAGES.JOB.FAILED_CREATE_ZIP,
+        data: {
+          jobId,
+          error
+        },
+      });
+    }
+  
   };
 
-  export default jobLogger
+  export default jobLogger;

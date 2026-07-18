@@ -7,6 +7,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.6.0",
     "helmet": "^7.0.0",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.11.0",
@@ -15,16 +16,34 @@
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.8",
     "umzug": "^3.8.3",
-    "winston": "^3.19.0"
+    "winston": "^3.19.0",
+    "zod": "^4.4.3"
   },
-   "scripts": {
+  "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "migrate": "tsx src/utils/migrate.ts",
-    "migrate:undo": "tsx src/utils/migrate-undo.ts"
+    "migrate:undo": "tsx src/utils/migrate-undo.ts",
+    "seed": "tsx src/utils/seed.ts",
+    "seed:undo": "tsx src/utils/seed-undo.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.0",
     "@types/archiver": "^7.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
@@ -35,11 +54,22 @@
     "@types/node": "^26.1.1",
     "@types/supertest": "^7.2.1",
     "cross-env": "^10.1.0",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.5",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-promise": "^7.3.0",
+    "eslint-plugin-security": "^4.0.1",
+    "globals": "^17.7.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8",
     "nodemon": "^3.1.14",
     "npm": "^12.0.1",
+    "prettier": "^3.9.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.23.1",
     "typescript": "^6.0.0",
+    "typescript-eslint": "^8.64.0",
     "uninstall": "^0.0.0"
   }
 }

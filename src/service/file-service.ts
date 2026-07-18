@@ -1,16 +1,16 @@
 import fs from "fs";
 
-import model from "../models/index.js";
 import FILE_CONSTANTS from "../constants/index.js";
-
-
-
-import {
-  IFileDto,
+import type {
   IGetProjectFilesResponseDto,
-  IUploadFileResponseDto,
-} from "../dto/response/file-response-dto.js";
+  IUploadFileResponseDto} from "../dto/response/file-response-dto.js";
+import logger from "../logger/index.js";
 import { AppError } from "../middleware/app-error.js";
+import model from "../models/index.js";
+
+
+
+
 
 /**
  * Uploads one or more files to a project.
@@ -51,19 +51,18 @@ export const uploadFilesService = async (
       mime_type: file.mimetype,
       path: file.path,
     }));
+
+
+    
   
     const createdFiles = await model.File.bulkCreate(uploadedFiles);
   
-    const fileCount = await model.File.count({
-      where: {
-        project_id: projectId
-      }
-    });
+    const fileCount = await project.countFiles();
   
     await project.update({
       files_count: fileCount
     });
-  
+
     const response: IUploadFileResponseDto = {
       message: FILE_CONSTANTS.MESSAGES.FILE.UPLOAD_SUCCESS,
       result: createdFiles.map(file => ({
@@ -77,6 +76,8 @@ export const uploadFilesService = async (
         uploadedAt: file.uploadedAt
       }))
     };
+
+    logger.fileLogger.uploaded(projectId, fileCount);
   
     return response;
   };
@@ -96,11 +97,7 @@ export const getProjectFilesService = async (
   
     const project = await model.Project.findByPk(projectId);
 
-    const fileCount = await model.File.count({
-        where: {
-          project_id: projectId
-        }
-      });
+    const fileCount = await project!.countFiles();
   
     if (!project) {
       throw new AppError(
@@ -109,16 +106,13 @@ export const getProjectFilesService = async (
       );
     }
   
-    const files = await model.File.findAll({
-      where: {
-        project_id: projectId
-      },
-      order: [["uploadedAt", "DESC"]]
+    const files = await project!.getFiles({
+      order: [["uploadedAt", "DESC"]],
     });
-  
+
     const response: IGetProjectFilesResponseDto = {
       message: FILE_CONSTANTS.MESSAGES.FILE.FETCH_SUCCESS,
-      count: files.length,
+      count: fileCount,
   
       result: files.map(file => ({
         id: file.id,
@@ -131,6 +125,9 @@ export const getProjectFilesService = async (
         uploadedAt: file.uploadedAt
       }))
     };
+
+ 
+    logger.fileLogger.uploaded(projectId, fileCount);
   
     return response;
   };
@@ -190,6 +187,8 @@ export const deleteFileService = async (
     if (fs.existsSync(file.path)) {
       fs.unlinkSync(file.path);
     }
+
+    logger.fileLogger.deleted(projectId, fileId);
   
     return {
       message: FILE_CONSTANTS.MESSAGES.FILE.DELETE_SUCCESS

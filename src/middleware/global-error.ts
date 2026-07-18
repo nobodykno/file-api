@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response} from "express";
+
 
 import FILE_CONSTANTS from "../constants/index.js";
 import { AppError } from "./app-error.js";
@@ -46,4 +47,4 @@ import logger from "../config/logger.js";
     });
 };
 
-export default globalErrorHandler
+export default globalErrorHandler;

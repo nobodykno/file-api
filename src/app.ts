@@ -1,20 +1,21 @@
-import express from "express";
+
+
 import cors from "cors";
-
-
+import express from "express";
 import "./models/index.js";
-import mainRoute from "./route/main-route.js";
-import globalErrorHandler from "./middleware/global-error.js";
-import morganMiddleware from "./config/morgan.js";
-
 import helmet from "helmet";
-// const require = createRequire(import.meta.url);
-// const helmet = require("helmet");
+
+import morganMiddleware from "./config/morgan.js";
+import corsOptions from "./middleware/cors.js";
+import globalErrorHandler from "./middleware/global-error.js";
+import globalLimiter from "./middleware/rate-limiter.js";
+import mainRoute from "./route/main-route.js";
+
 
 const app = express();
 
 
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
@@ -23,6 +24,8 @@ app.use(
 );
 
 app.use(morganMiddleware);
+
+app.use(globalLimiter)
 
 // Routes
 app.use("/v1", mainRoute);

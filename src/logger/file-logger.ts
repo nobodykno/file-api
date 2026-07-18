@@ -1,12 +1,13 @@
-import { logSuccess } from "../middleware/success-logger.js";
+import FILE_CONSTANTS from "../constants/index.js";
+import middleware from "../middleware/index.js";
 
- 
+
  const fileLogger = {
   uploaded(projectId: number, totalFiles: number) {
-    logSuccess({
-      module: "File",
-      action: "UPLOAD",
-      message: "Files uploaded successfully",
+    middleware.logSuccess({
+      module: FILE_CONSTANTS.MESSAGES.MODULE.FILE,
+      action: FILE_CONSTANTS.MESSAGES.ACTION.UPLOAD,
+      message: FILE_CONSTANTS.MESSAGES.FILE.UPLOAD_SUCCESS,
       data: {
         projectId,
         totalFiles,
@@ -15,10 +16,10 @@ import { logSuccess } from "../middleware/success-logger.js";
   },
 
   deleted(projectId: number, fileId: number) {
-    logSuccess({
-      module: "File",
-      action: "DELETE",
-      message: "File deleted successfully",
+    middleware.logSuccess({
+      module: FILE_CONSTANTS.MESSAGES.MODULE.FILE,
+      action: FILE_CONSTANTS.MESSAGES.ACTION.CREATE,
+      message: FILE_CONSTANTS.MESSAGES.FILE.DELETE_SUCCESS,
       data: {
         projectId,
         fileId,
@@ -27,10 +28,10 @@ import { logSuccess } from "../middleware/success-logger.js";
   },
 
   fetched(projectId: number, count: number) {
-    logSuccess({
-      module: "File",
-      action: "GET",
-      message: "Files fetched successfully",
+    middleware.logSuccess({
+      module: FILE_CONSTANTS.MESSAGES.MODULE.FILE,
+      action: FILE_CONSTANTS.MESSAGES.ACTION.GET,
+      message: FILE_CONSTANTS.MESSAGES.FILE.FETCH_SUCCESS,
       data: {
         projectId,
         totalFiles: count,
@@ -38,6 +39,8 @@ import { logSuccess } from "../middleware/success-logger.js";
     });
   },
 };
+
+
 
 
 export default fileLogger;

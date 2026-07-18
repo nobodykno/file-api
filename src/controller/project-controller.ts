@@ -1,17 +1,18 @@
-import { Request, Response, NextFunction, response } from "express";
-import service from "../service/index.js";
+import type { NextFunction, Request, Response} from "express";
+
 import FILE_CONSTANTS from "../constants/index.js";
-import {
+import type {
   ICreateProjectRequestDto,
   IUpdateProjectRequestDto,
 } from "../dto/request/project-request-dto.js";
-import {
+import type {
   ICreateProjectResponseDto,
+  IDeleteProjectResponseDto,
   IGetAllProjectsResponseDto,
   IGetProjectResponseDto,
   IUpdateProjectResponseDto,
-  IDeleteProjectResponseDto,
 } from "../dto/response/project-response-dto.js";
+import service from "../service/index.js";
 
 /**
  * Creates a new project.
@@ -22,7 +23,7 @@ import {
  * @returns A JSON response containing the created project details.
  */
 export const createProject = async (
-  req: Request<{}, {}, ICreateProjectRequestDto>,
+  req: Request<object,ICreateProjectResponseDto,ICreateProjectRequestDto>,
   res: Response<ICreateProjectResponseDto>,
   next: NextFunction
 ) => {
@@ -56,7 +57,7 @@ export const getAllProjects = async (
     const response:IGetAllProjectsResponseDto = {
       message:FILE_CONSTANTS.MESSAGES.PROJECT.FETCH_SUCCESS,
       result:project.result
-    }
+    };
 
 
 
@@ -103,7 +104,7 @@ export const getProjectById = async (
  * @returns A JSON response containing the updated project details.
  */
 export const updateProject = async (
-  req: Request<{ projectId: string }, {}, IUpdateProjectRequestDto>,
+  req: Request<{ projectId: string }, IUpdateProjectRequestDto>,
   res: Response<IUpdateProjectResponseDto>,
   next: NextFunction
 ) => {

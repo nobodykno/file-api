@@ -1,6 +1,14 @@
-import { DataTypes, Model } from "sequelize";
+import type { 
+  HasManyGetAssociationsMixin,
+   HasManyCountAssociationsMixin, 
+   HasManyCreateAssociationMixin} from "sequelize";
+import { DataTypes, Model  } from "sequelize";
+
 import sequelize from "../config/database.js";
-import { IProjectAttributes, IProjectCreationAttributes } from "../types/project-type.js";
+import type { IProjectAttributes, IProjectCreationAttributes } from "../types/project-type.js";
+
+import type File from "./file-model.js";
+import type Job from "./job-model.js";
 
 
 
@@ -13,6 +21,14 @@ class Project extends Model<IProjectAttributes, IProjectCreationAttributes> impl
   declare jobs_count: number;
   declare createdAt: Date;
   declare updatedAt: Date;
+   // File Association
+  declare getFiles: HasManyGetAssociationsMixin<File>;
+  declare countFiles: HasManyCountAssociationsMixin;
+  declare createFile: HasManyCreateAssociationMixin<File>;
+    // Job Association
+  declare getJobs: HasManyGetAssociationsMixin<Job>;
+  declare countJobs: HasManyCountAssociationsMixin;
+  declare createJob: HasManyCreateAssociationMixin<Job>;
 }
 
 Project.init(

@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import type { NextFunction, Request, Response } from "express";
+
 import FILE_CONSTANTS from "../constants/index.js";
 import service from "../service/index.js";
 
@@ -21,6 +22,8 @@ export const uploadFiles = async (
       Number(req.params.projectId),
       req.files as Express.Multer.File[]
     );
+
+   
 
     return res
       .status(FILE_CONSTANTS.HTTP_STATUS.CREATED)

@@ -1,7 +1,8 @@
 import { DataTypes, Model } from "sequelize";
+
 import sequelize from "../config/database.js";
-import { IJobAttributes } from "../types/job-type.js";
-import { ICreateJobRequestDto } from "../dto/request/job-request-dto.js";
+import type { ICreateJobRequestDto } from "../dto/request/job-request-dto.js";
+import type { IJobAttributes } from "../types/job-type.js";
 
 
 class Job extends Model<IJobAttributes, ICreateJobRequestDto> implements IJobAttributes {

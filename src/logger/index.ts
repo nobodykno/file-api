@@ -1,7 +1,7 @@
-import projectLogger from './project-logger.js';
-import jobLogger from './job-logger.js';
-import fileLogger from './file-logger.js';
 import  authLogger  from './auth-logger.js';
+import fileLogger from './file-logger.js';
+import jobLogger from './job-logger.js';
+import projectLogger from './project-logger.js';
 
  const logger =  {
 
@@ -9,6 +9,6 @@ import  authLogger  from './auth-logger.js';
     jobLogger,
     fileLogger,
     authLogger
-}
+};
 
 export default logger;

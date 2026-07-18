@@ -1,4 +1,5 @@
-import { DataTypes, QueryInterface } from "sequelize";
+import type { QueryInterface } from "sequelize";
+import { DataTypes } from "sequelize";
 
 export const up = async ({
   context: queryInterface,

@@ -1,11 +1,12 @@
-import { DataTypes, QueryInterface } from "sequelize";
+import type {  QueryInterface } from "sequelize";
+import { DataTypes } from "sequelize";
 
 export const up = async ({
   context: queryInterface,
 }: {
   context: QueryInterface;
 }): Promise<void> => {
-  await queryInterface.createTable("projects", {
+  await queryInterface.createTable("files", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -13,35 +14,43 @@ export const up = async ({
       allowNull: false,
     },
 
+    project_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "projects",
+        key: "id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    },
+
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
 
-    description: {
-      type: DataTypes.TEXT,
+    file_name: {
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
 
-    files_count: {
+    size: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0,
     },
 
-    jobs_count: {
-      type: DataTypes.INTEGER,
+    mime_type: {
+      type: DataTypes.STRING(255),
       allowNull: false,
-      defaultValue: 0,
     },
 
-    createdAt: {
-      type: DataTypes.DATE,
+    path: {
+      type: DataTypes.STRING(500),
       allowNull: false,
-      defaultValue: DataTypes.NOW,
     },
 
-    updatedAt: {
+    uploadedAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
@@ -49,8 +58,11 @@ export const up = async ({
   });
 };
 
+
+
+
 export const down = async (
   { context: queryInterface }: { context: QueryInterface }
 ): Promise<void> => {
-  await queryInterface.dropTable("projects", { cascade: true });
+  await queryInterface.dropTable("files");
 };

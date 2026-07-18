@@ -1,4 +1,4 @@
-export interface SuccessLog {
+export interface ILog {
     action: string;
     module: string;
     message: string;

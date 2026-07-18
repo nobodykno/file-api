@@ -1,6 +1,7 @@
-import { Request, Response, NextFunction } from "express";
-import service from "../service/index.js";
+import type { Request, Response, NextFunction } from "express";
+
 import FILE_CONSTANTS from "../constants/index.js";
+import service from "../service/index.js";
 
 
 /**

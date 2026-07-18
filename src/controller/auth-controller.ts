@@ -1,13 +1,11 @@
 
-import dotenv from "dotenv";
-import { Request, Response, NextFunction } from 'express';
-import { ILoginRequestDto } from "../dto/request/auth-request-dto.js";
-import { ILoginResponseDto } from "../dto/response/auth-response-dto.js";
-import service from "../service/index.js";
-import FILE_CONSTANTS from "../constants/index.js";
-import { IErrorResponseDto } from "../dto/response/error-response-dto.js";
 
-dotenv.config();
+import type { Request, Response, NextFunction } from 'express';
+
+import FILE_CONSTANTS from "../constants/index.js";
+import type { ILoginRequestDto } from "../dto/request/auth-request-dto.js";
+import type { ILoginResponseDto } from "../dto/response/auth-response-dto.js";
+import service from "../service/index.js";
 
 
 export const login = async (req: Request<ILoginRequestDto>, res: Response<ILoginResponseDto>, next: NextFunction) => {

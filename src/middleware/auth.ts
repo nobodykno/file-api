@@ -1,8 +1,8 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
-import dotenv from "dotenv";
 import type { Request, Response, NextFunction } from "express";
+import type { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
-dotenv.config();
+
 
 interface AuthRequest extends Request {
   user?: string | JwtPayload;
