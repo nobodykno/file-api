@@ -1,5 +1,5 @@
 import morgan from "morgan";
-import logger from "./logger.js";
+import logger from "../config/logger.js";
 
 const stream = {
   write: (message: string) => {
@@ -11,7 +11,7 @@ const morganMiddleware =
   process.env.NODE_ENV === "development"
     ? morgan("dev")
     : morgan(":method :url :status :response-time ms", {
-        stream,
-      });
+      stream,
+    });
 
 export default morganMiddleware;

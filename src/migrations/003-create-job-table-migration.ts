@@ -70,6 +70,10 @@ export const up = async ({
       defaultValue: DataTypes.NOW,
     },
   });
+
+  await queryInterface.addIndex("jobs", ["project_id"], {
+    name: "jobs_project_id",
+  });
 };
 
 

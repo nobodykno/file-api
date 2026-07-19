@@ -7,7 +7,7 @@ import type { ICreateProjectResponseDto, IDeleteProjectResponseDto, IGetAllProje
 import { AppError } from "../middleware/app-error.js";
 
 import logger from "../logger/index.js";
-import idValidators from "../utils/id-validator.js";
+import utils from "../utils/index.js";
 ;
 
 
@@ -70,7 +70,7 @@ export const getProjectByIdService = async (
   projectId: number
 ): Promise<IGetProjectResponseDto> => {
 
-  idValidators.validateProjectId(projectId);
+  utils.idValidators.validateProjectId(projectId);
 
   const project = await model.Project.findByPk(projectId);
 
@@ -104,7 +104,7 @@ export const updateProjectService = async (
   projectInfo: IUpdateProjectRequestDto
 ): Promise<IUpdateProjectResponseDto> => {
 
-  idValidators.validateProjectId(projectId);
+  utils.idValidators.validateProjectId(projectId);
   if (!projectInfo.name || !projectInfo.description) {
     throw new AppError(
       FILE_CONSTANTS.MESSAGES.PROJECT.NAME_DESCRIPTION_REQUIRED,
@@ -144,7 +144,7 @@ export const deleteProjectService = async (
   projectId: number
 ): Promise<IDeleteProjectResponseDto> => {
 
-  idValidators.validateProjectId(projectId);
+  utils.idValidators.validateProjectId(projectId);
   const project = await model.Project.findByPk(projectId);
 
   if (!project) {

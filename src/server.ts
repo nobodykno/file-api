@@ -1,4 +1,8 @@
 import "./config/env.js";
+import middleware from "./middleware/index.js";
+
+middleware.validateEnv();
+
 import app from "./app.js";
 import sequelize from "./config/database.js";
 
@@ -31,4 +35,4 @@ const startServer = async (): Promise<void> => {
 };
 
 
-startServer();
+void startServer();

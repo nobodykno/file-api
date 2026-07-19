@@ -48,6 +48,7 @@ export const up = async ({
       defaultValue: DataTypes.NOW,
     },
   });
+
 };
 
 export const down = async (

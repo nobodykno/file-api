@@ -20,15 +20,14 @@ import { AppError } from "../middleware/app-error.js";
 import model from "../models/index.js";
 import logger from "../logger/index.js";
 
-import idValidators from "../utils/id-validator.js";
-
+import utils from "../utils/index.js";
 
 export const createJobService = async (
     projectId: number,
     jobInfo: ICreateJobRequestDto
 ): Promise<ICreateJobResponseDto> => {
 
-    idValidators.validateProjectId(projectId);
+    utils.idValidators.validateProjectId(projectId);
 
     const project = await model.Project.findByPk(projectId);
 
@@ -356,8 +355,8 @@ export const downloadOutputService = async (
 ) => {
 
 
-    idValidators.validateProjectId(projectId);
-    idValidators.validateJobId(jobId);
+    utils.idValidators.validateProjectId(projectId);
+    utils.idValidators.validateJobId(jobId);
     const job =
         await model.Job.findOne({
 

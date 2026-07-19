@@ -56,6 +56,10 @@ export const up = async ({
       defaultValue: DataTypes.NOW,
     },
   });
+
+  await queryInterface.addIndex("files", ["project_id"], {
+    name: "files_project_id",
+  });
 };
 
 

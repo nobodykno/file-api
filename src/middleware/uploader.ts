@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-
+import crypto from "crypto";
 import multer from "multer";
+import utils from "../utils/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,8 +30,8 @@ const storage = multer.diskStorage({
   },
 
   filename: (_req, file, cb) => {
-    const uniqueName = `${Date.now()}-${file.originalname}`;
-    cb(null, uniqueName);
+    const fileName = utils.sanitizeFileName(file.originalname);
+    cb(null, `${crypto.randomUUID()}-${fileName}`);
   },
 });
 

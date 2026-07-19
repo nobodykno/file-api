@@ -7,7 +7,7 @@ import type {
 import logger from "../logger/index.js";
 import { AppError } from "../middleware/app-error.js";
 import model from "../models/index.js";
-
+import utils from "../utils/index.js";
 
 
 
@@ -26,7 +26,8 @@ export const uploadFilesService = async (
     projectId: number,
     files: Express.Multer.File[]
   ): Promise<IUploadFileResponseDto> => {
-  
+     
+    utils.idValidators.validateProjectId(projectId);
     const project = await model.Project.findByPk(projectId);
   
     if (!project) {
@@ -94,6 +95,8 @@ export const uploadFilesService = async (
 export const getProjectFilesService = async (
     projectId: number
   ): Promise<IGetProjectFilesResponseDto> => {
+
+    utils.idValidators.validateProjectId(projectId);
   
     const project = await model.Project.findByPk(projectId);
 
@@ -148,6 +151,9 @@ export const deleteFileService = async (
     projectId: number,
     fileId: number
   ): Promise<{ message: string }> => {
+
+    utils.idValidators.validateProjectId(projectId);
+    utils.idValidators.validateFileId(fileId);
   
     const project = await model.Project.findByPk(projectId);
   

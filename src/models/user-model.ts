@@ -1,6 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database.js";
-import { IUserAttributes } from "../types/user-type.js";
+import type { IUserAttributes } from "../types/user-type.js";
 
 
 
