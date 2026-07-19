@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import controller from "../controller/index.js";
-import verifyToken from "../middleware/auth.js";
+import verifyToken from "../middleware/auth-token.js";
 import schema from "../validators/index.js";
 import middleware from "../middleware/index.js";
 const router = Router({ mergeParams: true });
@@ -10,6 +10,7 @@ const router = Router({ mergeParams: true });
 router.post(
   "/",
   verifyToken,
+  middleware.authenticateUser,
   middleware.validate(schema.jobValidator.createJobSchema),
   controller.JobController.createJob
 );
@@ -17,6 +18,7 @@ router.post(
 router.get(
   "/",
   verifyToken,
+  middleware.authenticateUser,
   middleware.validate(schema.jobValidator.getAllJobsSchema),
   controller.JobController.getAllJobs
 );
@@ -24,6 +26,7 @@ router.get(
 router.get(
   "/:jobId",
   verifyToken,
+  middleware.authenticateUser,
   middleware.validate(schema.jobValidator.getJobStatusSchema),
   controller.JobController.getJobStatus
 );
@@ -31,6 +34,7 @@ router.get(
 router.get(
   "/:jobId/download",
   verifyToken,
+  middleware.authenticateUser,
   middleware.validate(schema.jobValidator.downloadOutputSchema),
   controller.JobController.downloadOutput
 );

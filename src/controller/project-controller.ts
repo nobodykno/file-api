@@ -28,7 +28,7 @@ export const createProject = async (
   next: NextFunction
 ) => {
   try {
-    const response = await service.project.createProjectService(req.body);
+    const response = await service.project.createProjectService(req.body, req.user!.id);
 
     return res
       .status(FILE_CONSTANTS.HTTP_STATUS.CREATED)

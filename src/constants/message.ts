@@ -5,6 +5,15 @@ const MESSAGES = {
     LOGIN_FAILED: 'Failed to login',
 
     INVALID_CREDENTIALS: 'Invalid email or password!',
+
+    USER_ALREADY_EXIST: 'User already existed',
+
+    USER_REGISTERED: 'User created successfully ',
+    
+    TOKEN_NOT_FOUND: 'Token not found',
+
+    INVALID_TOKEN: 'Invalid details'
+  
   },
 
   PROJECT: {
@@ -99,6 +108,10 @@ const MESSAGES = {
     DELETE: 'Delete',
 
     GET: 'Get',
+
+    LOGIN: 'Login',
+
+    REGISTER: 'Register',
 
     COMPLETE: 'Complete',
 

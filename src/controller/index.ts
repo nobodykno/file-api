@@ -10,4 +10,4 @@ import * as AuthController from "./auth-controller.js";
   AuthController,
 };
 
-export default controller
+export default controller;

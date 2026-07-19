@@ -1,7 +1,7 @@
 import type { 
-  HasManyGetAssociationsMixin,
-   HasManyCountAssociationsMixin, 
-   HasManyCreateAssociationMixin} from "sequelize";
+  HasManyCountAssociationsMixin,
+   HasManyCreateAssociationMixin, 
+   HasManyGetAssociationsMixin} from "sequelize";
 import { DataTypes, Model  } from "sequelize";
 
 import sequelize from "../config/database.js";
@@ -21,6 +21,7 @@ class Project extends Model<IProjectAttributes, IProjectCreationAttributes> impl
   declare jobs_count: number;
   declare createdAt: Date;
   declare updatedAt: Date;
+  declare user_id: number;
    // File Association
   declare getFiles: HasManyGetAssociationsMixin<File>;
   declare countFiles: HasManyCountAssociationsMixin;
@@ -37,6 +38,15 @@ Project.init(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+    },
+
+    user_id:{
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "User",
+        key: "id",
+      },
     },
 
     name: {

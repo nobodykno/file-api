@@ -16,6 +16,12 @@ const startServer = async (): Promise<void> => {
     // Step 1 — Connect to database
     await sequelize.authenticate();
 
+    console.log({
+      database:  sequelize.getDatabaseName(),
+      host:  sequelize.config.host,
+      port:  sequelize.config.port,
+    });
+
     console.log("✅ Database connected");
 
     // Step 3 — Start server

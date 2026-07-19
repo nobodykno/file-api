@@ -3,7 +3,7 @@ import Job from "./job-model.js";
 import Project from "./project-model.js";
 import User from "./user-model.js";
 
-import "./association.js"
+import "./association.js";
 
 const model = {
   Project,
@@ -12,4 +12,4 @@ const model = {
   User,
 };
 
-export default  model
+export default  model;

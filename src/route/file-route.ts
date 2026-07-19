@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import controller from "../controller/index.js";
-import verifyToken from "../middleware/auth.js";
+import verifyToken from "../middleware/auth-token.js";
 import upload from "../middleware/uploader.js";
 import middleware from "../middleware/index.js";
 import schema from "../validators/index.js";
@@ -11,9 +11,9 @@ const router = Router({ mergeParams: true });
 router.post(
   "/",
   verifyToken,
+  middleware.authenticateUser,
   upload.array("files", 10),
   middleware.validate(schema.fileValidators.uploadFilesSchema),
-
   controller.FileController.uploadFiles
 );
 
@@ -21,6 +21,7 @@ router.post(
 router.get(
   "/",
   verifyToken,
+  middleware.authenticateUser,
   middleware.validate(schema.fileValidators.getProjectFilesSchema),
   controller.FileController.getProjectFiles
 );
@@ -29,6 +30,7 @@ router.get(
 router.delete(
   "/:fileId",
   verifyToken,
+  middleware.authenticateUser,
   middleware.validate(schema.fileValidators.deleteFileSchema),
   controller.FileController.deleteFile
 );

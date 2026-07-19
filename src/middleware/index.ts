@@ -6,6 +6,8 @@ import validate from "./validate.js";
 import morganMiddleware from "./morgan.js";
 import corsOptions from "./cors.js";
 import validateEnv from "../config/validate-env.js";
+import authToken from "./auth-token.js";
+import authenticateUser from "./user-owner.js";
 
 const middleware = {
     globalErrorHandler,
@@ -15,7 +17,9 @@ const middleware = {
     logError,
     morganMiddleware,
     corsOptions,
-    validateEnv
+    validateEnv,
+    authToken,
+    authenticateUser
 };
 
 export default middleware;

@@ -1,4 +1,4 @@
-import { Optional } from "sequelize";
+import type { Optional } from "sequelize";
 
 export interface IProjectAttributes {
     id: number;
@@ -8,11 +8,12 @@ export interface IProjectAttributes {
     jobs_count: number;
     createdAt: Date;
     updatedAt: Date;
+    user_id: number
   }
 
 
 
   export type IProjectCreationAttributes = Optional<
   IProjectAttributes,
-  "id" | "files_count" | "jobs_count" | "createdAt" | "updatedAt"
+  "id" | "files_count" | "jobs_count" | "createdAt" | "updatedAt" | "user_id"
 >;

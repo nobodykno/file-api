@@ -1,15 +1,23 @@
+import type { HasManyCountAssociationsMixin, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin} from "sequelize";
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database.js";
-import type { IUserAttributes } from "../types/user-type.js";
+import type { ICreateUserRequestDto, IUserAttributes } from "../types/user-type.js";
+import type Project from "./project-model.js";
 
 
 
-class User extends Model<IUserAttributes> implements IUserAttributes {
+class User extends Model<IUserAttributes, ICreateUserRequestDto> implements IUserAttributes {
 
   declare id: number;
   declare name: string;
   declare email: string;
   declare password: string;
+
+  declare getProjects: HasManyGetAssociationsMixin<Project>;
+
+declare countProjects: HasManyCountAssociationsMixin;
+
+declare createProject: HasManyCreateAssociationMixin<Project>;
 
 }
 

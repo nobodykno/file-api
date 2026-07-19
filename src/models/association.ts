@@ -1,6 +1,20 @@
-import File from './file-model.js'
+import File from './file-model.js';
 import Job from "./job-model.js";
 import Project from "./project-model.js";
+import User from './user-model.js';
+
+User.hasMany(Project, {
+    foreignKey: "owner_id",
+    as: "projects",
+
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+});
+
+Project.belongsTo(User, {
+    foreignKey: "owner_id",
+    as: "owner",
+});
 
 Project.hasMany(File,{
     foreignKey:"project_id",

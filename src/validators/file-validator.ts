@@ -58,6 +58,6 @@ const  fileValidators = {
     getProjectFilesSchema,
     deleteFileSchema
 
-}
+};
 
-export default fileValidators
+export default fileValidators;

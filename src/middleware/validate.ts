@@ -14,34 +14,34 @@ import { AppError } from "./app-error.js";
  */
 const validate =
   (schema: ValidationSchema) =>
-  (req: Request, res: Response, next: NextFunction): void => {
-    const sections = [
-      "body",
-      "params",
-    ] as const;
+    (req: Request, res: Response, next: NextFunction): void => {
+      const sections = [
+        "body",
+        "params",
+      ] as const;
 
-    for (const section of sections) {
-      const validator = schema[section];
+      for (const section of sections) {
+        const validator = schema[section];
 
-      if (!validator) {
-        continue;
+        if (!validator) {
+          continue;
+        }
+
+        const result = validator.safeParse(req[section]);
+
+        if (!result.success) {
+          return next(
+            new AppError(
+              result.error.issues.map((issue) => issue.message).join(", "),
+              400
+            )
+          );
+        }
+
+        req[section] = result.data;
       }
 
-      const result = validator.safeParse(req[section]);
-
-      if (!result.success) {
-        return next(
-          new AppError(
-            "Validation failed",
-            400
-          )
-        );
-      }
-
-      req[section] = result.data;
-    }
-
-    next();
-  };
+      next();
+    };
 
 export default validate;

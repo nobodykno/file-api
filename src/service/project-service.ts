@@ -13,7 +13,8 @@ import utils from "../utils/index.js";
 
 
 export const createProjectService = async (
-  project: ICreateProjectRequestDto
+  project: ICreateProjectRequestDto,
+  userId:number
 ): Promise<ICreateProjectResponseDto> => {
 
   if (!project.name || !project.description) {
@@ -24,6 +25,7 @@ export const createProjectService = async (
   }
 
   const newProject = await model.Project.create({
+    user_id:userId,
     name: project.name,
     description: project.description,
   });

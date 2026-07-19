@@ -6,7 +6,7 @@ export const up = async ({
 }: {
   context: QueryInterface;
 }): Promise<void> => 
-  {
+ {
   await queryInterface.createTable("users", {
     id: {
       type: DataTypes.INTEGER,
