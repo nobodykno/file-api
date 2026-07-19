@@ -1,4 +1,5 @@
 import { z } from "zod";
+import FILE_CONSTANTS from "../constants/index.js";
 
 /**
  * Validates project route parameters.
@@ -37,10 +38,10 @@ import { z } from "zod";
         .array(
           z.coerce
             .number()
-            .int("File ID must be an integer.")
-            .positive("File ID must be greater than zero.")
+            .int(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.INVALID_NUMBER('FileId'))
+            .positive(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.POSITIVE_NUMBER('FileId'))
         )
-        .min(1, "At least one file must be selected."),
+        .min(1, FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.MIN_FILE(1)),
     })
     .strict(),
 };

@@ -1,4 +1,4 @@
-import logError from "./error-logger.js";
+
 import globalErrorHandler from "./global-error.js";
 import globalRateLimiter from "./rate-limiter.js";
 import logSuccess from "./success-logger.js";
@@ -14,7 +14,6 @@ const middleware = {
     globalRateLimiter,
     logSuccess,
     validate,
-    logError,
     morganMiddleware,
     corsOptions,
     validateEnv,

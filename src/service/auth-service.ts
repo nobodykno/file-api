@@ -46,6 +46,7 @@ export const loginService = async (
   );
 
   if (!isPasswordValid) {
+    console.log("errror");
     throw new AppError(
       FILE_CONSTANTS.MESSAGES.AUTH.INVALID_CREDENTIALS,
       FILE_CONSTANTS.HTTP_STATUS.UNAUTHORIZED

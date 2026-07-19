@@ -1,4 +1,5 @@
 import { z } from "zod";
+import FILE_CONSTANTS from "../constants/index.js";
 
 /**
  * Validates project route parameters.
@@ -6,8 +7,8 @@ import { z } from "zod";
  const projectParamsSchema = z.object({
   projectId: z.coerce
     .number()
-    .int("Project ID must be an integer.")
-    .positive("Project ID must be greater than zero."),
+    .int(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.INVALID_NUMBER('ProjectId'))
+    .positive(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.POSITIVE_NUMBER('ProjectId'))
 });
 
 /**
@@ -16,13 +17,13 @@ import { z } from "zod";
 const fileParamsSchema = z.object({
   projectId: z.coerce
     .number()
-    .int("Project ID must be an integer.")
-    .positive("Project ID must be greater than zero."),
+    .int(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.INVALID_NUMBER('ProjectId'))
+    .positive(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.POSITIVE_NUMBER('ProjectId')),
 
   fileId: z.coerce
     .number()
-    .int("File ID must be an integer.")
-    .positive("File ID must be greater than zero."),
+    .int(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.INVALID_NUMBER('FileId'))
+    .positive(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.POSITIVE_NUMBER('FileId'))
 });
 
 /**

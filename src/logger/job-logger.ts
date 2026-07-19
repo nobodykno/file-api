@@ -1,5 +1,6 @@
 import FILE_CONSTANTS from "../constants/index.js";
 import middleware from "../middleware/index.js";
+import logger from "./index.js";
 
  const jobLogger = {
     created(jobId: number) {
@@ -69,7 +70,7 @@ import middleware from "../middleware/index.js";
     },
 
     errorZip(jobId: number, error:unknown) {
-      middleware.logError({
+      logger.logError({
         module: FILE_CONSTANTS.MESSAGES.MODULE.JOBS,
         action: FILE_CONSTANTS.MESSAGES.ACTION.CREATE_ZIP,
         message: FILE_CONSTANTS.MESSAGES.JOB.FAILED_CREATE_ZIP,

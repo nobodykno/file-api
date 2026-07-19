@@ -1,4 +1,5 @@
 import  authLogger  from './auth-logger.js';
+import logError from './error-logger.js';
 import fileLogger from './file-logger.js';
 import jobLogger from './job-logger.js';
 import projectLogger from './project-logger.js';
@@ -8,7 +9,8 @@ import projectLogger from './project-logger.js';
     projectLogger,
     jobLogger,
     fileLogger,
-    authLogger
+    authLogger,
+    logError
 };
 
 export default logger;

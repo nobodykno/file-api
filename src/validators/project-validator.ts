@@ -1,4 +1,5 @@
 import { z } from "zod";
+import FILE_CONSTANTS from "../constants/index.js";
 
 /**
  * Validates project route parameters.
@@ -6,8 +7,9 @@ import { z } from "zod";
 const projectParamsSchema = z.object({
   projectId: z.coerce
     .number()
-    .int("Project ID must be an integer.")
-    .positive("Project ID must be greater than zero."),
+    .int(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.INVALID_NUMBER('ProjectId'))
+    .positive(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.POSITIVE_NUMBER('ProjectId'))
+    
 });
 
 /**
@@ -18,15 +20,19 @@ const createProjectSchema = {
     .object({
       name: z
         .string()
+        .regex(FILE_CONSTANTS.MESSAGES.VALIDATION.ALLOWED_TEXT)
         .trim()
-        .min(3, "Project name must be at least 3 characters.")
-        .max(100, "Project name cannot exceed 100 characters."),
+        .regex(FILE_CONSTANTS.MESSAGES.VALIDATION.ALLOWED_TEXT)
+        .min(10, FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.MIN_LENGTH("Project name",10 ))
+        .max(30, FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.MAX_LENGTH("Project name",30 )),
+  
 
       description: z
         .string()
+        .regex(FILE_CONSTANTS.MESSAGES.VALIDATION.ALLOWED_TEXT)
         .trim()
-        .min(5, "Description must be at least 5 characters.")
-        .max(500, "Description cannot exceed 500 characters."),
+        .min(5, FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.MIN_LENGTH("Project description",10 ))
+        .max(500, FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.MAX_LENGTH("Project description",500 )),
     })
     .strict(),
 };
@@ -40,18 +46,19 @@ const updateProjectSchema = {
   body: z
     .object({
       name: z
-        .string()
-        .trim()
-        .min(3)
-        .max(100)
-        .optional(),
+      .string()
+      .regex(FILE_CONSTANTS.MESSAGES.VALIDATION.ALLOWED_TEXT)
+      .trim()
+      .regex(FILE_CONSTANTS.MESSAGES.VALIDATION.ALLOWED_TEXT)
+      .min(10, FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.MIN_LENGTH("Project name",10 ))
+      .max(30, FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.MAX_LENGTH("Project name",30 )),
 
       description: z
         .string()
+        .regex(FILE_CONSTANTS.MESSAGES.VALIDATION.ALLOWED_TEXT)
         .trim()
-        .min(5)
-        .max(500)
-        .optional(),
+        .min(5, FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.MIN_LENGTH("Project description",10 ))
+        .max(500, FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.MAX_LENGTH("Project description",500 )),
     })
     .strict(),
 };

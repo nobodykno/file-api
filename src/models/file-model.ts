@@ -47,7 +47,7 @@ File.init(
     },
 
     size: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
 

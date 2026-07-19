@@ -98,6 +98,8 @@ const MESSAGES = {
     JOBS: 'Jobs',
 
     AUTH: 'Auth',
+
+    GLOBAL_ERROR: 'Global error'
   },
 
   ACTION: {
@@ -120,6 +122,8 @@ const MESSAGES = {
     DOWNLOAD: 'Download',
 
     CREATE_ZIP: 'Create Zip',
+
+    UNHANDLED_ERROR: 'Unhandled Error'
   },
 
   MIGRATIONS: {
@@ -138,7 +142,51 @@ const MESSAGES = {
     SERVER_ERROR: 'Something went wrong!',
 
     T00_MANY_REQUEST: 'Too many requests. Please try again later.',
+
+    VALIDATION_ERROR: 'Validation failed!',
+
+    DUPLICATE_RESOURCE: 'Duplicate record found'
   },
+
+  VALIDATION: {
+    ALLOWED_TEXT: /^[\p{L}\p{N}\s.,&@#$%()_-]+$/u
+  },
+
+  SCHEMA_VALIDATION:{
+
+    INVALID_EMAIL:(field: string): string => {
+      return `${field} is having invalid characters.`;
+    },
+
+    INVALID_NUMBER: (field: string): string => {
+      return `${field} is having invalid chracter.`;
+    },
+
+    POSITIVE_NUMBER: (field: string): string => {
+      return `${field} must be greater than zero`;
+    },
+
+    INVALID_CHARACTERS: (field: string): string => {
+      return `${field} contains invalid characters.`;
+    },
+  
+    REQUIRED: (field: string): string => {
+      return `${field} is required.`;
+    },
+  
+    MIN_LENGTH: (field: string, min: number): string => {
+      return `${field} must be at least ${min} characters long.`;
+    },
+
+    MAX_LENGTH: (field: string, max: number): string => {
+      return `${field} must not exceed  ${max} characters long.`;
+    },
+
+    MIN_FILE: (min: number): string => {
+      return `Minimum ${min} file is required`;
+    },
+  }
+  
 };
 
 export default MESSAGES;
