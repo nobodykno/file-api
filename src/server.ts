@@ -17,9 +17,9 @@ const startServer = async (): Promise<void> => {
     await sequelize.authenticate();
 
     console.log({
-      database:  sequelize.getDatabaseName(),
-      host:  sequelize.config.host,
-      port:  sequelize.config.port,
+      database: sequelize.getDatabaseName(),
+      host: sequelize.config.host,
+      port: sequelize.config.port,
     });
 
     console.log("✅ Database connected");
@@ -37,7 +37,7 @@ const startServer = async (): Promise<void> => {
     process.exit(1);
   }
 
-  console.log("After app.listen");
+
 };
 
 

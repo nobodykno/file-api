@@ -18,6 +18,12 @@ const projectParamsSchema = z.object({
 const createProjectSchema = {
   body: z
     .object({
+      
+     user_id:z.coerce
+     .number()
+     .int(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.INVALID_NUMBER('UserId'))
+     .positive(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.POSITIVE_NUMBER('UserId')),
+
       name: z
         .string()
         .regex(FILE_CONSTANTS.MESSAGES.VALIDATION.ALLOWED_TEXT)

@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import type { QueryInterface } from "sequelize";
 
 export const up = async ({
@@ -5,14 +6,14 @@ export const up = async ({
 }: {
   context: QueryInterface;
 }): Promise<void> => {
-  await queryInterface.bulkInsert("projects", [
+  const hashedPassword = await bcrypt.hash("Admin@123", 10);
+
+  await queryInterface.bulkInsert("users", [
     {
       id: 1,
-      name: "Sample Project",
-      user_id:1,
-      description: "Demo project",
-      files_count: 2,
-      jobs_count: 1,
+      name: "Admin User",
+      email: "admin@example.com",
+      password: hashedPassword,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -24,7 +25,7 @@ export const down = async ({
 }: {
   context: QueryInterface;
 }): Promise<void> => {
-  await queryInterface.bulkDelete("projects", {
+  await queryInterface.bulkDelete("users", {
     id: 1,
   });
 };

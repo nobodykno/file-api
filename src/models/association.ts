@@ -4,7 +4,7 @@ import Project from "./project-model.js";
 import User from './user-model.js';
 
 User.hasMany(Project, {
-    foreignKey: "owner_id",
+    foreignKey: "user_id",
     as: "projects",
 
     onDelete: "CASCADE",
@@ -12,7 +12,7 @@ User.hasMany(Project, {
 });
 
 Project.belongsTo(User, {
-    foreignKey: "owner_id",
+    foreignKey: "user_id",
     as: "owner",
 });
 

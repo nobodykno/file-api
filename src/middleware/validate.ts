@@ -9,7 +9,7 @@ import { AppError } from "./app-error.js";
 /**
  * Validates request body, params, query and headers.
  *
- * @param schema - Zod validation schemas.
+ * @param schema - validation schemas.
  * @returns Express middleware.
  */
 const validate =

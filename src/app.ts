@@ -22,9 +22,11 @@ app.use(
   helmet()
 );
 
+if (process.env.NODE_ENV !== "test") {
+  app.use(middleware.globalRateLimiter);
+}
 
 
-app.use(middleware.globalRateLimiter);
 
 // Routes
 app.use("/v1", mainRoute);

@@ -132,7 +132,15 @@ export const updateProjectService = async (
 
   const response: IUpdateProjectResponseDto = {
     message: FILE_CONSTANTS.MESSAGES.PROJECT.UPDATE_SUCCESS,
-    result: project
+    result: {
+      id: project.id,
+      name: projectInfo.name,
+      description: projectInfo.description,
+      files_count: project.files_count,
+      jobs_count: project.jobs_count,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+    }
   };
 
   logger.projectLogger.updated(projectId);
@@ -171,7 +179,7 @@ export const deleteProjectService = async (
   await project.destroy();
 
   const response: IDeleteProjectResponseDto = {
-    message: FILE_CONSTANTS.MESSAGES.PROJECT.CREATE_SUCCESS
+    message: FILE_CONSTANTS.MESSAGES.PROJECT.DELETE_SUCCESS
   };
 
 

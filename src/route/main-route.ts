@@ -7,7 +7,7 @@ router.use("/api", Route.AuthRoute);
 
 router.use("/api/projects", Route.ProjectRoute);
 
-router.use("/api/projects/:projectId/file", Route.FileRoute);
+router.use("/api/projects/:projectId/files", Route.FileRoute);
 
 router.use("/api/projects/:projectId/jobs", Route.JobRoute);
 
