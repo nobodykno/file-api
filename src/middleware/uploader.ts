@@ -1,12 +1,11 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 import crypto from "crypto";
 import multer from "multer";
 import utils from "../utils/index.js";
+import FILE_CONSTANTS from "../constants/index.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
 
 
 // Create uploads folder if it doesn't exist
@@ -18,7 +17,7 @@ const allowedMimeTypes = [
   "application/zip",
 ];
 
-const uploadDir = path.join(__dirname, "../uploads");
+const uploadDir = path.join(process.cwd(), "/uploads");
 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -40,7 +39,7 @@ const fileFilter: multer.Options["fileFilter"] = (req, file, cb) => {
     return cb(null, true);
   }
 
-  cb(new Error("Invalid file type."));
+  cb(new Error(FILE_CONSTANTS.MESSAGES.FILE.INVALID_FILE_TYPE));
 };
 const upload = multer({
   storage,

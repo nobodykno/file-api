@@ -1,9 +1,7 @@
-import type { ZodTypeAny } from "zod";
+import type { z } from 'zod';
 
 
 export interface ValidationSchema {
-    body?: ZodTypeAny;
-    params?: ZodTypeAny;
-    query?: ZodTypeAny;
-    headers?: ZodTypeAny;
-  }
+  body?: z.ZodObject;
+  params?: z.ZodObject
+}

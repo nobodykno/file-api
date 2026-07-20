@@ -189,7 +189,6 @@ describe("PROJECT API", () => {
           name: "Project Details",
           description: "DemoDemo demo",
         });
-      console.log(response.body);
       projectId = response.body.result.id;
     });
 

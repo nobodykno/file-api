@@ -29,8 +29,6 @@ export const createJobService = async (
 
     utils.idValidators.validateProjectId(projectId);
 
-    const project = await model.Project.findByPk(projectId);
-
     if (!jobInfo.fileIds || jobInfo.fileIds.length === 0) {
         throw new AppError(
             FILE_CONSTANTS.MESSAGES.JOB.FILE_REQUIRED,
@@ -38,44 +36,47 @@ export const createJobService = async (
         );
     }
 
+    const project = await model.Project.findByPk(projectId);
 
-    const files = await project?.getFiles({
+    if (!project) {
+        throw new AppError(
+            FILE_CONSTANTS.MESSAGES.PROJECT.PROJECT_NOT_FOUND,
+            404
+        );
+    }
+
+    // Fetch only the requested files belonging to this project
+    const files = await project.getFiles({
         where: {
             id: jobInfo.fileIds,
-        }
+        },
     });
 
-    const fileCount = await project?.countFiles();
-
-
-    if (fileCount === 0) {
-
+    // Ensure all requested files exist
+    if (files.length !== jobInfo.fileIds.length) {
         throw new AppError(
             FILE_CONSTANTS.MESSAGES.JOB.FILE_NOT_FOUND,
             404
         );
     }
 
-
     const job = await model.Job.create({
-        project_id: jobInfo.project_id,
+        project_id: projectId, 
         status: "PENDING",
         progress: 0,
-        fileIds: jobInfo.fileIds
+        fileIds: jobInfo.fileIds,
     });
 
     logger.jobLogger.created(job.id);
 
+    // Start ZIP generation in the background
     void processZipJob(job.id, files);
-
 
     return {
         message: FILE_CONSTANTS.MESSAGES.JOB.CREATE_SUCCESS,
-        result: job
+        result: job,
     };
-
 };
-
 
 
 
@@ -257,6 +258,13 @@ export const getAllJobsService = async (
 
     const project = await model.Project.findByPk(projectId);
 
+    if (!project) {
+        throw new AppError(
+            FILE_CONSTANTS.MESSAGES.PROJECT.PROJECT_NOT_FOUND,
+            404
+        );
+    }
+
     const jobs =
         await project!.getJobs({
             order: [
@@ -264,7 +272,7 @@ export const getAllJobsService = async (
             ]
         });
 
-    const jobCount =  await project!.countJobs();
+    const jobCount = await project!.countJobs();
 
     logger.jobLogger.fetchedAll(jobCount);
 
